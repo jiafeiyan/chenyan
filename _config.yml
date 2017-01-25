@@ -1,1 +1,114 @@
-theme: jekyll-theme-cayman
+# Site settings
+title: 陈琰 Blog
+SEOTitle: 陈琰的博客 | ChenYan Blog
+header-img: img/home-bg.jpg
+email: kimchy123@126.com
+description: "关于前端与设计、黑客与画家 | 陈琰，Web & Mobile Lover，Front-End Engineer，UX Designer | 这里是 @陈琰 的个人博客，与你一起发现更大的世界。"
+keyword: "陈琰, 加菲琰, Jfy, @陈琰,@加菲琰, 陈琰的博客, Jfy Blog, 博客, 个人网站, 互联网, 前端, 设计, 产品"
+url: "https://jiafeiyan.github.io/chenyan.github.io/"           
+baseurl: ""                           
+
+
+
+# SNS settings
+RSS: false
+zhihu_username:     chen-yan-78-96
+github_username:    jiafeiyan
+linkedin_username:  琰-陈-465481119
+
+
+
+# Build settings
+# from 2016, 'pygments' is unsupported on GitHub Pages. Use 'rouge' for highlighting instead.
+highlighter: rouge
+permalink: pretty
+paginate: 5
+exclude: ["less","node_modules","Gruntfile.js","package.json","README.md"]
+anchorjs: true                          # if you want to customize anchor. check out line:181 of `post.html`
+
+
+
+# Gems
+# from PR#40, to support local preview for Jekyll 3.0
+gems: [jekyll-paginate]
+
+
+
+# Markdown settings
+# replace redcarpet to kramdown,
+# although redcarpet can auto highlight code, the lack of header-id make the catalog impossible, so I switch to kramdown
+# document: http://jekyllrb.com/docs/configuration/#kramdown
+markdown: kramdown
+kramdown:
+  input: GFM                            # use Github Flavored Markdown !important
+
+
+
+# Disqus settings
+#disqus_username: _your_disqus_short_name_
+
+# Duoshuo settings
+#duoshuo_username: huxblog
+# Share component is depend on Comment so we can NOT use share only.
+#duoshuo_share: true                     # set to false if you want to use Comment without Sharing
+
+
+
+
+# Analytics settings
+# Baidu Analytics 
+# ba_track_id: [your track id]
+
+# Google Analytics
+#ga_track_id: 'UA-49627206-1'            # Format: UA-xxxxxx-xx
+#3ga_domain: huangxuan.me
+
+
+
+# Sidebar settings
+sidebar: true                           # whether or not using Sidebar.
+sidebar-about-description: "写写代码，听听音乐<br>做做设计，看看产品<br>离开世界之前，一切都是过程"
+sidebar-avatar: https://jiafeiyan.github.io/chenyan/img/chenyan.jpg      # use absolute URL, seeing it's used in both `/` and `/about/`
+
+
+
+# Featured Tags
+featured-tags: true                     # whether or not using Feature-Tags
+featured-condition-size: 1              # A tag will be featured if the size of it is more than this condition value
+
+
+
+# Progressive Web Apps
+chrome-tab-theme-color: "#000000"
+service-worker: true
+
+
+
+# Friends
+friends: [
+    {
+        title: "CSDN",
+        href: "http://www.csdn.net"
+    },{
+        title: "GeekPark",
+        href: "http://www.geekpark.net"
+    },{
+        title: "前端外刊评论",
+        href: "http://qianduan.guru"
+    },{
+        title: "花瓣网",
+        href: "http://huaban.com"
+    },{
+        title: "知乎日报",
+        href: "http://daily.zhihu.com"
+    },{
+        title: "凡高的耳朵",
+        href: "http://www.rui123.com"
+    },{
+        title: "TOPYS",
+        href: "http://www.topys.cn"
+    },{
+        title: "果壳网",
+        href: "http://www.guokr.com"
+    }
+]
