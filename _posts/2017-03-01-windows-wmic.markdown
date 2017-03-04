@@ -1,7 +1,7 @@
 ---
 layout:     post
 title:      "WMIC命令使用详解"
-subtitle:   "第一次执行WMIC命令时，Windows首先要安装WMIC，然后显示出WMIC的命令行提示符。在WMIC命令行提示符上，命令以交互的方式执行"
+subtitle:   "在WMIC命令行提示符上，命令以交互的方式执行"
 date:       2017-03-01
 author:     "Chenyan"
 header-img: "img/post-bg-wmic.jpg"
