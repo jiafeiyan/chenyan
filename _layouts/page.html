@@ -27,8 +27,8 @@ layout: default
 }
 </style>
 <header class="intro-header" id="home_warp">
-    <iframe id="c" src="{{ "/js/bgfile/a5.html " | prepend: site.baseurl }}" ></iframe>
-    <!-- <iframe id="c"></iframe> -->
+   <!--  <iframe id="c" src="{{ "/js/bgfile/a5.html " | prepend: site.baseurl }}" ></iframe> -->
+    <iframe id="c"></iframe>
 
     <div class="container" id="home_bg">
         <div class="row">
@@ -42,6 +42,12 @@ layout: default
         </div>
     </div>
 </header>
+<script>
+$(function(){
+    var srcPath = "{{ '/js/bgfile/a" + RandomNumBoth(1,5) + ".html ' | prepend: site.baseurl }}";
+    $("#c").attr("src",srcPath);
+})    
+</script>
 <script>
 function RandomNumBoth(Min,Max){
   var Range = Max - Min;
