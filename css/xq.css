@@ -32,8 +32,8 @@ animation-name:runspin;
 	display: inline-block;
 	color: #fff;
 	box-sizing:inherit;
-	text-align: center;
-	float: left;
+	text-align: left;
+	/*float: left;*/
 }
 .xq_navli a{
 	display: block;
