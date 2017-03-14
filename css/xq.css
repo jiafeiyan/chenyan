@@ -33,7 +33,7 @@ animation-name:runspin;
 	color: #fff;
 	box-sizing:inherit;
 	text-align: center;
-	/*float: left;*/
+	float: left;
 }
 .xq_navli a{
 	display: block;
