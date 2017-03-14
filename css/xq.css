@@ -1,0 +1,62 @@
+@-webkit-keyframes runspin{
+100%{-webkit-transform-origin:center center;-webkit-transform:rotate(360deg);}
+}
+@-moz-keyframes runspin{
+100%{-moz-transform-origin:center center;-moz-transform:rotate(360deg);}
+}
+@-ms-keyframes runspin{
+100%{-ms-transform-origin:center center;-ms-transform:rotate(360deg);}
+}
+@-o-keyframes runspin{
+100%{-o-transform-origin:center center;-o-transform:rotate(360deg);}
+}
+@keyframes runspin{
+100%{transform-origin:center center;transform:rotate(360deg);}
+}
+.delay{
+	-webkit-animation-delay: 1s;
+	   -moz-animation-delay: 1s;
+	   -ms-animation-delay: 1s;
+	   -o-animation-delay: 1s;
+	     animation-delay: 1s;
+}
+.runspin{
+-webkit-animation-name:runspin;
+-moz-animation-name:runspin;
+-ms-animation-name:runspin;
+-o-animation-name:runspin;
+animation-name:runspin;
+}
+.xq_navli{
+	list-style: none;
+	display: inline-block;
+	color: #fff;
+	box-sizing:inherit;
+	text-align: center;
+	float: left;
+}
+.xq_navli a{
+	display: block;
+	color: currentcolor;
+	text-decoration: none;
+}
+.animated{
+	-webkit-animation-duration:1s;
+		-moz-animation-duration:1s;
+		-ms-animation-duration:1s;
+		-o-animation-duration:1s;
+			animation-duration:1s;
+	-webkit-animation-fill-mode:both;
+		-moz-animation-fill-mode:both;
+		-ms-animation-fill-mode:both;
+		-o-animation-fill-mode:both;
+		animation-fill-mode:both;
+}
+
+.animated2{
+	-webkit-animation-duration:2s;
+	-moz-animation-duration:2s;
+	-ms-animation-duration:2s;
+	-o-animation-duration:2s;
+	animation-duration:2s;
+}
