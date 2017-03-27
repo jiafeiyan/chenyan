@@ -113,5 +113,8 @@ friends: [
     },{
         title: "Unsplash",
         href: "https://unsplash.com"
+    },{
+        title: "Shvier's Blog",
+        href: "https://www.shvier.com/"
     }
 ]
