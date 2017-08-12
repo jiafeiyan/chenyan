@@ -30,6 +30,9 @@
     <!-- Pygments Github CSS -->
     <link rel="stylesheet" href="/css/syntax.css">
 
+    <!-- Nav Font CSS | add by Chenyan on 14th March-->
+    <link rel="stylesheet" href="/css/xq.css">
+
     <!-- Custom Fonts -->
     <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
     <!-- Hux change font-awesome CDN to qiniu -->
@@ -51,7 +54,7 @@
     <![endif]-->
 
     <!-- ga & ba script hoook -->
-    <script></script>
+    <script src="/js/jquery.min.js "></script>
 </head>
 
 
@@ -76,15 +79,15 @@
         <div id="huxblog_navbar">
             <div class="navbar-collapse">
                 <ul class="nav navbar-nav navbar-right">
-                    <li>
+                    <li class="xq_navli animated">
                         <a href="/">Home</a>
                     </li>
                     
-                    <li>
+                    <li class="xq_navli animated">
                         <a href="/about/">About</a>
                     </li>
                     
-                    <li>
+                    <li class="xq_navli animated">
                         <a href="/tags/">Tags</a>
                     </li>
                     
@@ -146,12 +149,47 @@
         if(e.target.className == 'icon-bar') return;
         __HuxNav__.close();
     })
+
+    $(function(){
+        $('li').on('mouseover',function(){
+            $(this).addClass("runspin");
+        });
+        $('li').on('mouseout',function(){
+            $(this).removeClass("runspin");
+        });
+    });
 </script>
 
 
     <!-- Page Header -->
-<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
-    <div class="container">
+<style>
+#home_warp{
+    position: relative;
+}
+#home_warp:after{
+    width: 0;
+    height: 0;
+    content: "";
+    clear: both;
+    display: block;
+}
+#c{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: 1;
+}
+#home_bg{
+    position: relative;
+    z-index: 2;
+    width: 100%;
+}
+</style>
+<header class="intro-header" id="home_warp">
+   <!--  <iframe id="c" src="/js/bgfile/a5.html " ></iframe> -->
+    <iframe id="c"></iframe>
+
+    <div class="container" id="home_bg">
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 ">
                 <div class="site-heading">
@@ -163,7 +201,20 @@
         </div>
     </div>
 </header>
-
+<script>
+$(function(){
+    var srcPath = "/js/bgfile/a" + RandomNumBoth(1,3) + ".html ";
+    $("#c").attr("src",srcPath);
+})    
+</script>
+<script>
+function RandomNumBoth(Min,Max){
+  var Range = Max - Min;
+  var Rand = Math.random();
+  var num = Min + Math.round(Rand * Range); //四舍五入
+  return num;
+}
+</script>
 <!-- Main Content -->
 <div class="container">
 	<div class="row">
@@ -179,8 +230,159 @@
                 postlist-container
             ">
     			
+<div class="post-preview">
+    <a href="/2017/03/10/kotlin-BloomFilter/">
+        <h2 class="post-title">
+            Kotlin入门学习————BloomFilter算法编写
+        </h2>
+        
+        <h3 class="post-subtitle">
+            内存消耗较少的去重策略，提供稳定去重服务
+        </h3>
+        
+        <div class="post-content-preview">
+            
+  Bloom Filter 是由 Howard Bloom在1970年提出的二进制向量数据结构，它具有很好的空间和时间效率，被用来检测一个元素是不是集合中的一个成员。如果检测结果为是，该元素不一定在集合中的；但如果检测结果为否，该元素一定不在集合中。因此Bloom Filter具有100%的召回率，同时也不适合哪些“零错误”的应用场景。这样每个检测请求返回有”在集合内（可能错误）“和”不...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by Chenyan on March 10, 2017
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2017/03/10/java-deadlock-jstack/">
+        <h2 class="post-title">
+            JAVA简单实现死锁例子以及Jstack分析死锁
+        </h2>
+        
+        <h3 class="post-subtitle">
+            学习java多线程死锁以及分析方法
+        </h3>
+        
+        <div class="post-content-preview">
+            
+  在计算机系统中有很多一次只能由一个进程使用的资源，如打印机，磁带机等。在多道程序设计环境中，若干进程往往要共享这类资源，而且一个进程所需要的资源不止一个。这样，就会出现若干进程竞争有限资源，又推进顺序不当，从而构成无限期循环等待的局面。这种状态就是死锁。系统发生死锁现象不仅浪费大量的系统资源，甚至导致整个系统崩溃，带来灾难性后果。所以，对于死锁问题在理论上和技术上都必须给予高度重视。
+...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by Chenyan on March 10, 2017
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2017/03/01/windows-wmic/">
+        <h2 class="post-title">
+            WMIC命令使用详解
+        </h2>
+        
+        <h3 class="post-subtitle">
+            在WMIC命令行提示符上，命令以交互的方式执行
+        </h3>
+        
+        <div class="post-content-preview">
+            
+  执行“wmic”命令启动WMIC命令行环境。这个命令可以在XP或 .NET Server的标准命令行解释器（cmd.exe）、Telnet会话或“运行”对话框中执行。这些启动方法可以在本地使用，也可以通过.NET Server终端服务会话使用。
+
+
+####使用模式
+
+使用模式分为交互模式(Interactive mode)和非交互模式(Non-Interactive mode)
+
+
+...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by Chenyan on March 1, 2017
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2017/01/22/JVM-%E8%B0%83%E4%BC%98%E5%8F%82%E6%95%B0%E8%AF%A6%E8%A7%A3/">
+        <h2 class="post-title">
+            JVM调优参数详解
+        </h2>
+        
+        <h3 class="post-subtitle">
+            深入掌握JVM中各项参数的实际意义
+        </h3>
+        
+        <div class="post-content-preview">
+            JVM参数
+
+
+  
+    
+      参数名称
+      含义
+      默认值
+       
+    
+  
+  
+    
+      -Xms
+      初始堆大小
+      初始堆大小
+      默认(MinHeapFreeRatio参数可以调整)空余堆内存小于40%时，JVM就会增大堆直到-Xmx的最大限制.
+    
+    
+      -Xmx
+      ...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by Chenyan on January 22, 2017
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2017/01/21/%E5%85%B3%E4%BA%8EJVM%E8%99%9A%E6%8B%9F%E6%9C%BA32%E4%BD%8D%E5%92%8C64%E4%BD%8D%E7%9A%84%E6%8E%A2%E7%B4%A2/">
+        <h2 class="post-title">
+            JVM虚拟机32位和64位的探索
+        </h2>
+        
+        <h3 class="post-subtitle">
+            深入了解java虚拟机
+        </h3>
+        
+        <div class="post-content-preview">
+            
+  32位和64位系统在计算机领域中常常提及，而对应的应用程序也出现了32位和64位两个版本，那么这两者之间有什么区别呢？
+
+
+IA介绍
+
+简介
+
+说到处理器，大家用的最多的莫过于Intel的处理器了，所以本文主要从Intel的处理器讲解32位和64位的处理器之分。
+
+通常将采用Intel（英特尔）处理器的服务器称之为IA（IntelArchitecture）架构服务器，又称 CISC（C...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by Chenyan on January 21, 2017
+    </p>
+</div>
+<hr>
+
 
 <!-- Pager -->
+
+<ul class="pager">
+    
+    
+    <li class="next">
+        <a href="/page2">Older Posts &rarr;</a>
+    </li>
+    
+</ul>
 
 
     		</div>
@@ -199,6 +401,20 @@
                     <h5><a href="/tags/">FEATURED TAGS</a></h5>
                     <div class="tags">
                         
+                            
+                        
+                            
+                                <a href="/tags/#Java virtual machines" title="Java virtual machines" rel="3">
+                                    Java virtual machines
+                                </a>
+                            
+                        
+                            
+                        
+                            
+                        
+                            
+                        
                     </div>
                 </section>
                 
@@ -208,7 +424,7 @@
                     <hr><h5><a href="/about/">ABOUT ME</a></h5>
                     <div class="short-about">
                         
-                            <img src="/img/chenyan.jpg" />
+                            <img src="/chenyan.jpg" />
                         
                         
                             <p>写写代码，听听音乐<br>做做设计，看看产品<br>离开世界之前，一切都是过程</p>
@@ -274,6 +490,8 @@
                     
                         <li><a href="http://www.guokr.com">果壳网</a></li>
                     
+                        <li><a href="https://unsplash.com">Unsplash</a></li>
+                    
                 </ul>
                 
     		</div>
@@ -336,7 +554,7 @@
 </footer>
 
 <!-- jQuery -->
-<script src="/js/jquery.min.js "></script>
+<!-- <script src="/js/jquery.min.js "></script> -->
 
 <!-- Bootstrap Core JavaScript -->
 <script src="/js/bootstrap.min.js "></script>

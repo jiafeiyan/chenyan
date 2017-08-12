@@ -30,6 +30,9 @@
     <!-- Pygments Github CSS -->
     <link rel="stylesheet" href="/css/syntax.css">
 
+    <!-- Nav Font CSS | add by Chenyan on 14th March-->
+    <link rel="stylesheet" href="/css/xq.css">
+
     <!-- Custom Fonts -->
     <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
     <!-- Hux change font-awesome CDN to qiniu -->
@@ -51,7 +54,7 @@
     <![endif]-->
 
     <!-- ga & ba script hoook -->
-    <script></script>
+    <script src="/js/jquery.min.js "></script>
 </head>
 
 
@@ -76,15 +79,15 @@
         <div id="huxblog_navbar">
             <div class="navbar-collapse">
                 <ul class="nav navbar-nav navbar-right">
-                    <li>
+                    <li class="xq_navli animated">
                         <a href="/">Home</a>
                     </li>
                     
-                    <li>
+                    <li class="xq_navli animated">
                         <a href="/about/">About</a>
                     </li>
                     
-                    <li>
+                    <li class="xq_navli animated">
                         <a href="/tags/">Tags</a>
                     </li>
                     
@@ -146,6 +149,15 @@
         if(e.target.className == 'icon-bar') return;
         __HuxNav__.close();
     })
+
+    $(function(){
+        $('li').on('mouseover',function(){
+            $(this).addClass("runspin");
+        });
+        $('li').on('mouseout',function(){
+            $(this).removeClass("runspin");
+        });
+    });
 </script>
 
 
@@ -170,6 +182,16 @@
             <!-- 标签云 -->
 			<div id='tag_cloud' class="tags">
 				
+				<a href="#Java program" title="Java program" rel="1">Java program</a>
+				
+				<a href="#Java virtual machines" title="Java virtual machines" rel="3">Java virtual machines</a>
+				
+				<a href="#Windows" title="Windows" rel="1">Windows</a>
+				
+				<a href="#Java" title="Java" rel="1">Java</a>
+				
+				<a href="#Kotlin" title="Kotlin" rel="1">Kotlin</a>
+				
 			</div>
 
             <!--<blockquote class="tag-comments">
@@ -179,6 +201,174 @@
             </blockquote>-->
 
             <!-- 标签列表 -->
+			
+			<div class="one-tag-list">
+			  	<span class="fa fa-tag listing-seperator" id="Java program">
+                    <span class="tag-text">Java program</span>
+                </span>
+				
+				  <!-- <li class="listing-item">
+				  <time datetime="2017-01-20">2017-01-20</time>
+				  <a href="/2017/01/20/Java-virtual-machines/" title="初识JAVA虚拟机">初识JAVA虚拟机</a>
+				  </li> -->
+				 <div class="post-preview">
+				    <a href="/2017/01/20/Java-virtual-machines/">
+				        <h2 class="post-title">
+                            初识JAVA虚拟机
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            了解 Java Virtual Machines 各个版本之间的差异。
+				        </h3>
+				        
+				    </a>
+				    <!-- <p class="post-meta">2017-01-20</p> -->
+				</div>
+				<hr>
+				
+			</div>
+			
+			<div class="one-tag-list">
+			  	<span class="fa fa-tag listing-seperator" id="Java virtual machines">
+                    <span class="tag-text">Java virtual machines</span>
+                </span>
+				
+				  <!-- <li class="listing-item">
+				  <time datetime="2017-01-22">2017-01-22</time>
+				  <a href="/2017/01/22/JVM-%E8%B0%83%E4%BC%98%E5%8F%82%E6%95%B0%E8%AF%A6%E8%A7%A3/" title="JVM调优参数详解">JVM调优参数详解</a>
+				  </li> -->
+				 <div class="post-preview">
+				    <a href="/2017/01/22/JVM-%E8%B0%83%E4%BC%98%E5%8F%82%E6%95%B0%E8%AF%A6%E8%A7%A3/">
+				        <h2 class="post-title">
+                            JVM调优参数详解
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            深入掌握JVM中各项参数的实际意义
+				        </h3>
+				        
+				    </a>
+				    <!-- <p class="post-meta">2017-01-22</p> -->
+				</div>
+				<hr>
+				
+				  <!-- <li class="listing-item">
+				  <time datetime="2017-01-21">2017-01-21</time>
+				  <a href="/2017/01/21/%E5%85%B3%E4%BA%8EJVM%E8%99%9A%E6%8B%9F%E6%9C%BA32%E4%BD%8D%E5%92%8C64%E4%BD%8D%E7%9A%84%E6%8E%A2%E7%B4%A2/" title="JVM虚拟机32位和64位的探索">JVM虚拟机32位和64位的探索</a>
+				  </li> -->
+				 <div class="post-preview">
+				    <a href="/2017/01/21/%E5%85%B3%E4%BA%8EJVM%E8%99%9A%E6%8B%9F%E6%9C%BA32%E4%BD%8D%E5%92%8C64%E4%BD%8D%E7%9A%84%E6%8E%A2%E7%B4%A2/">
+				        <h2 class="post-title">
+                            JVM虚拟机32位和64位的探索
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            深入了解java虚拟机
+				        </h3>
+				        
+				    </a>
+				    <!-- <p class="post-meta">2017-01-21</p> -->
+				</div>
+				<hr>
+				
+				  <!-- <li class="listing-item">
+				  <time datetime="2017-01-20">2017-01-20</time>
+				  <a href="/2017/01/20/Java-virtual-machines/" title="初识JAVA虚拟机">初识JAVA虚拟机</a>
+				  </li> -->
+				 <div class="post-preview">
+				    <a href="/2017/01/20/Java-virtual-machines/">
+				        <h2 class="post-title">
+                            初识JAVA虚拟机
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            了解 Java Virtual Machines 各个版本之间的差异。
+				        </h3>
+				        
+				    </a>
+				    <!-- <p class="post-meta">2017-01-20</p> -->
+				</div>
+				<hr>
+				
+			</div>
+			
+			<div class="one-tag-list">
+			  	<span class="fa fa-tag listing-seperator" id="Windows">
+                    <span class="tag-text">Windows</span>
+                </span>
+				
+				  <!-- <li class="listing-item">
+				  <time datetime="2017-03-01">2017-03-01</time>
+				  <a href="/2017/03/01/windows-wmic/" title="WMIC命令使用详解">WMIC命令使用详解</a>
+				  </li> -->
+				 <div class="post-preview">
+				    <a href="/2017/03/01/windows-wmic/">
+				        <h2 class="post-title">
+                            WMIC命令使用详解
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            在WMIC命令行提示符上，命令以交互的方式执行
+				        </h3>
+				        
+				    </a>
+				    <!-- <p class="post-meta">2017-03-01</p> -->
+				</div>
+				<hr>
+				
+			</div>
+			
+			<div class="one-tag-list">
+			  	<span class="fa fa-tag listing-seperator" id="Java">
+                    <span class="tag-text">Java</span>
+                </span>
+				
+				  <!-- <li class="listing-item">
+				  <time datetime="2017-03-10">2017-03-10</time>
+				  <a href="/2017/03/10/java-deadlock-jstack/" title="JAVA简单实现死锁例子以及Jstack分析死锁">JAVA简单实现死锁例子以及Jstack分析死锁</a>
+				  </li> -->
+				 <div class="post-preview">
+				    <a href="/2017/03/10/java-deadlock-jstack/">
+				        <h2 class="post-title">
+                            JAVA简单实现死锁例子以及Jstack分析死锁
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            学习java多线程死锁以及分析方法
+				        </h3>
+				        
+				    </a>
+				    <!-- <p class="post-meta">2017-03-10</p> -->
+				</div>
+				<hr>
+				
+			</div>
+			
+			<div class="one-tag-list">
+			  	<span class="fa fa-tag listing-seperator" id="Kotlin">
+                    <span class="tag-text">Kotlin</span>
+                </span>
+				
+				  <!-- <li class="listing-item">
+				  <time datetime="2017-03-10">2017-03-10</time>
+				  <a href="/2017/03/10/kotlin-BloomFilter/" title="Kotlin入门学习————BloomFilter算法编写">Kotlin入门学习————BloomFilter算法编写</a>
+				  </li> -->
+				 <div class="post-preview">
+				    <a href="/2017/03/10/kotlin-BloomFilter/">
+				        <h2 class="post-title">
+                            Kotlin入门学习————BloomFilter算法编写
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            内存消耗较少的去重策略，提供稳定去重服务
+				        </h3>
+				        
+				    </a>
+				    <!-- <p class="post-meta">2017-03-10</p> -->
+				</div>
+				<hr>
+				
+			</div>
 			
 
 		</div>
@@ -240,7 +430,7 @@
 </footer>
 
 <!-- jQuery -->
-<script src="/js/jquery.min.js "></script>
+<!-- <script src="/js/jquery.min.js "></script> -->
 
 <!-- Bootstrap Core JavaScript -->
 <script src="/js/bootstrap.min.js "></script>

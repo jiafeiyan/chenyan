@@ -5,9 +5,809 @@
     <description>关于前端与设计、黑客与画家 | 陈琰，Web &amp; Mobile Lover，Front-End Engineer，UX Designer | 这里是 @陈琰 的个人博客，与你一起发现更大的世界。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 25 Jan 2017 12:01:42 +0800</pubDate>
-    <lastBuildDate>Wed, 25 Jan 2017 12:01:42 +0800</lastBuildDate>
+    <pubDate>Sun, 11 Jun 2017 10:45:42 +0800</pubDate>
+    <lastBuildDate>Sun, 11 Jun 2017 10:45:42 +0800</lastBuildDate>
     <generator>Jekyll v3.3.1</generator>
+    
+      <item>
+        <title>Kotlin入门学习————BloomFilter算法编写</title>
+        <description>&lt;blockquote&gt;
+  &lt;p&gt;Bloom Filter 是由 Howard Bloom在1970年提出的二进制向量数据结构，它具有很好的空间和时间效率，被用来检测一个元素是不是集合中的一个成员。如果检测结果为是，该元素不一定在集合中的；但如果检测结果为否，该元素一定不在集合中。因此Bloom Filter具有100%的召回率，同时也不适合哪些“零错误”的应用场景。这样每个检测请求返回有”在集合内（可能错误）“和”不在集合内（绝对不在集合内）“两种情况，可见Bloom Filter是牺牲了正确率和时间以节省空间。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h4 id=&quot;程序例子代码&quot;&gt;程序例子代码&lt;/h4&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;package spider.bloomFilter
+
+import java.util.*
+
+/**
+ * Created by chenyan on 2017/5/25.
+ * BloomFilter算法，去重策略，提供稳定的去重服务，内存消耗较少
+ */
+
+class BloomFilter{
+
+    /* BitSet初始分配2^24个bit */
+    private val DEFAULT_SIZE: Int get() = 1 shl 25
+    private val bits: BitSet = BitSet(DEFAULT_SIZE)
+
+    /* 哈希函数的种子，一般应取质数 */
+    private val SEEDS: IntArray get() = intArrayOf(5,7,11,13,31,37,61)
+    /* 哈希函数对象 */
+    private val func: Array&amp;lt;SimpleHash?&amp;gt; get() = Array(size = SEEDS.size,init = {
+        index -&amp;gt; SimpleHash(DEFAULT_SIZE , SEEDS[index])
+    })
+
+    /* 将字符串标记到bits中 */
+    @Synchronized fun add(value: String): Unit {
+        func.forEach { simpleHash -&amp;gt;
+            bits.set(simpleHash!!.hash(value),true)
+        }
+    }
+
+    /* 判断字符串是否已经被bits标记 */
+    fun contains(value: String): Boolean {
+        if (value == null) return false
+        var ret: Boolean = true
+        func.forEach { simpleHash -&amp;gt;
+            ret = ret &amp;amp;&amp;amp; bits.get(simpleHash!!.hash(value))
+        }
+        return ret
+    }
+
+    /* 哈希函数类 */
+    private class SimpleHash( val cap: Int , val seed: Int ){
+        /* hash函数，采用简单的加权和hash */
+        fun hash(value: String): Int {
+            var result: Int = 0
+            for (i in value.indices){
+                result = seed * result + value[i].toInt()
+            }
+            return (cap - 1) and result
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+</description>
+        <pubDate>Fri, 10 Mar 2017 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2017/03/10/kotlin-BloomFilter/</link>
+        <guid isPermaLink="true">http://localhost:4000/2017/03/10/kotlin-BloomFilter/</guid>
+        
+        <category>Kotlin</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>JAVA简单实现死锁例子以及Jstack分析死锁</title>
+        <description>&lt;blockquote&gt;
+  &lt;p&gt;在计算机系统中有很多一次只能由一个进程使用的资源，如打印机，磁带机等。在多道程序设计环境中，若干进程往往要共享这类资源，而且一个进程所需要的资源不止一个。这样，就会出现若干进程竞争有限资源，又推进顺序不当，从而构成无限期循环等待的局面。这种状态就是死锁。系统发生死锁现象不仅浪费大量的系统资源，甚至导致整个系统崩溃，带来灾难性后果。所以，对于死锁问题在理论上和技术上都必须给予高度重视。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h4 id=&quot;程序例子代码&quot;&gt;程序例子代码&lt;/h4&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
+public class DeadLockDemo {
+	public static String s1 = &quot;s1&quot;;
+	public static String s2 = &quot;s2&quot;;
+
+	public static void main(String[] args) {
+		new Thread(new T1()).start();
+		new Thread(new T2()).start();
+	}
+}
+
+class T1 implements Runnable {
+	@Override
+	public void run() {
+		while (true) {
+			try {
+				// 锁住T1对象
+				synchronized (T1.class) {
+					System.out.println(&quot;T1&quot; + DeadLockDemo.s1);
+					Thread.sleep(2000);
+					// 锁住T2对象
+					synchronized (T2.class) {
+						System.out.println(&quot;T1&quot; + DeadLockDemo.s2);
+					}
+				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+}
+
+class T2 implements Runnable {
+	@Override
+	public void run() {
+		while (true) {
+			try {
+				// 锁住T2对象
+				synchronized (T2.class) {
+					System.out.println(&quot;T2&quot; + DeadLockDemo.s1);
+					Thread.sleep(2000);
+					// 锁住T1对象
+					synchronized (T1.class) {
+						System.out.println(&quot;T2&quot; + DeadLockDemo.s2);
+					}
+				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;h4 id=&quot;jstack分析&quot;&gt;Jstack分析&lt;/h4&gt;
+&lt;ol&gt;
+  &lt;li&gt;查询进程PID
+&lt;img src=&quot;http://www.chenyan.pro/img/2017-03/deadlock_1.png&quot; alt=&quot;image description&quot; /&gt;&lt;/li&gt;
+  &lt;li&gt;调用自带的Jstack工具分析&lt;br /&gt;
+ 可以发现Thread-1和Thread-0两个线程已经互相锁住
+&lt;img src=&quot;http://www.chenyan.pro/img/2017-03/deadlock_2.png&quot; alt=&quot;image description&quot; /&gt;&lt;/li&gt;
+&lt;/ol&gt;
+</description>
+        <pubDate>Fri, 10 Mar 2017 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2017/03/10/java-deadlock-jstack/</link>
+        <guid isPermaLink="true">http://localhost:4000/2017/03/10/java-deadlock-jstack/</guid>
+        
+        <category>Java</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>WMIC命令使用详解</title>
+        <description>&lt;blockquote&gt;
+  &lt;p&gt;执行“wmic”命令启动WMIC命令行环境。这个命令可以在XP或 .NET Server的标准命令行解释器（cmd.exe）、Telnet会话或“运行”对话框中执行。这些启动方法可以在本地使用，也可以通过.NET Server终端服务会话使用。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;####使用模式&lt;/p&gt;
+
+&lt;p&gt;使用模式分为交互模式(Interactive mode)和非交互模式(Non-Interactive mode)&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;输入cmd进入命令行，键入wmic后出现wmic:root\cli&amp;gt;时你就可以输入命令了，在这里面输入命令来完成指令。exit是退出交互模式。&lt;/li&gt;
+  &lt;li&gt;用wmic后面直接跟命令运行，如wmic process就显示所有的进程了。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;####基本命令&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;显示出BIOS信息：&lt;/strong&gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;wmic bios list full&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;大家可能注意到了上面命令行中还有两个参数list和full。list决定显示的信息格式与范围，它有&lt;font style=&quot;color:red&quot;&gt;**Brief、Full、Instance、 Status、System、Writeable**&lt;/font&gt;等多个参数，full只是它的一个参数，也是list的缺省参数，表示显示所有的信息。其他几个参数顾名思义，如Brief表示只显示摘要信息，Instance表示只显示对象实例，Status表示显示对象状态，Writeable表示只显示该对象的可写入的属性信息等。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;查看cpu型号：&lt;/strong&gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;cpu get name&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;查看系统开机启动项：&lt;/strong&gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;startup&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;DataFile 管理：&lt;/strong&gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;datafile&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;查找e盘下test目录(不包括子目录)下的cc.cmd文件
+&lt;code class=&quot;highlighter-rouge&quot;&gt;datafile where &quot;drive='e:' and path='\\test\\' and FileName='cc' and Extension='cmd'&quot; list&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;删除e盘下文件大小大于10M的.cmd文件
+&lt;code class=&quot;highlighter-rouge&quot;&gt;datafile where &quot;drive='e:' and Extension='cmd' and FileSize&amp;gt;'10000000'&quot; call delete&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;删除e盘下test目录(不包括子目录)下的非.cmd文件
+&lt;code class=&quot;highlighter-rouge&quot;&gt;datafile where &quot;drive='e:' and Extension&amp;lt;&amp;gt;'cmd' and path='test'&quot; call delete&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;改名c:\hello.txt为c:\test.txt
+&lt;code class=&quot;highlighter-rouge&quot;&gt;datafile &quot;c:\\hello.txt&quot; call rename c:\test.txt&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;查找h盘下目录含有test,文件名含有perl,后缀为txt的文件
+&lt;code class=&quot;highlighter-rouge&quot;&gt;datafile where &quot;drive='h:' and extension='txt' and path like '%\\test\\%' and filename like '%perl%'&quot; get name&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;删除e盘下test目录(不包括子目录)下的非.cmd文件
+&lt;code class=&quot;highlighter-rouge&quot;&gt;datafile where &quot;drive='e:' and Extension&amp;lt;&amp;gt;'cmd' and path='test'&quot; call delete&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;监视器管理：&lt;/strong&gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;desktopmonitor where Status='ok' get ScreenHeight,ScreenWidth&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;获取物理磁盘型号大小等：&lt;/strong&gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;diskdrive get caption,size,interfacetype&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;环境变量：&lt;/strong&gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;environment&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;进程管理：&lt;/strong&gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;process list brief&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;新建notepad进程
+&lt;code class=&quot;highlighter-rouge&quot;&gt;process call create &quot;C:\Program Files\Tencent\QQ\QQ.exe&quot;&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;结束notepad进程
+&lt;code class=&quot;highlighter-rouge&quot;&gt;process where &quot;name='notepad.exe'&quot; call terminate&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Wed, 01 Mar 2017 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2017/03/01/windows-wmic/</link>
+        <guid isPermaLink="true">http://localhost:4000/2017/03/01/windows-wmic/</guid>
+        
+        <category>Windows</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>JVM调优参数详解</title>
+        <description>&lt;h2 id=&quot;jvm参数&quot;&gt;JVM参数&lt;/h2&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;参数名称&lt;/th&gt;
+      &lt;th&gt;含义&lt;/th&gt;
+      &lt;th&gt;默认值&lt;/th&gt;
+      &lt;th&gt; &lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-Xms&lt;/td&gt;
+      &lt;td&gt;初始堆大小&lt;/td&gt;
+      &lt;td&gt;初始堆大小&lt;/td&gt;
+      &lt;td&gt;默认(MinHeapFreeRatio参数可以调整)空余堆内存小于40%时，&lt;br /&gt;JVM就会增大堆直到-Xmx的最大限制.&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-Xmx&lt;/td&gt;
+      &lt;td&gt;最大堆大小&lt;/td&gt;
+      &lt;td&gt;物理内存的1/4(&amp;lt;1GB)&lt;/td&gt;
+      &lt;td&gt;默认(MaxHeapFreeRatio参数可以调整)空余堆内存大于70%时，JVM会减少堆直到 -Xms的最小限制&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-Xmn&lt;/td&gt;
+      &lt;td&gt;年轻代大小(1.4or lator)&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;此处的大小是（eden+ 2 survivor space).与jmap -heap中显示的New gen是不同的。&lt;br /&gt;整个堆大小=年轻代大小 + 年老代大小 + 持久代大小。&lt;br /&gt;增大年轻代后,将会减小年老代大小。此值对系统性能影响较大,Sun官方推荐配置为整个堆的3/8&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-XX:NewSize&lt;/td&gt;
+      &lt;td&gt;设置年轻代大小(for 1.3/1.4)&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-XX:MaxNewSize&lt;/td&gt;
+      &lt;td&gt;年轻代最大值(for 1.3/1.4)&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-XX:PermSize&lt;/td&gt;
+      &lt;td&gt;设置持久代(perm gen)初始值&lt;/td&gt;
+      &lt;td&gt;物理内存的1/64&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-XX:MaxPermSize&lt;/td&gt;
+      &lt;td&gt;设置持久代最大值&lt;/td&gt;
+      &lt;td&gt;物理内存的1/4&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-Xss&lt;/td&gt;
+      &lt;td&gt;每个线程的堆栈大小&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;JDK5.0以后每个线程堆栈大小为1M,以前每个线程堆栈大小为256K.更具应用的线程所需内存大小进行 调整.在相同物理内存下,减小这个值能生成更多的线程.但是操作系统对一个进程内的线程数还是有限制的,不能无限生成,经验值在3000~5000左右&lt;br /&gt;一般小的应用， 如果栈不是很深， 应该是128k够用的 大的应用建议使用256k。这个选项对性能影响比较大，需要严格的测试。&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-XX:ThreadStackSize&lt;/td&gt;
+      &lt;td&gt;Thread Stack Size&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-XX:NewRatio&lt;/td&gt;
+      &lt;td&gt;年轻代(包括Eden和两个Survivor区)与年老代的比值(除去持久代)&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;-XX:NewRatio=4表示年轻代与年老代所占比值为1:4,年轻代占整个堆栈的1/5&lt;br /&gt;Xms=Xmx并且设置了Xmn的情况下，该参数不需要进行设置&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-XX:SurvivorRatio&lt;/td&gt;
+      &lt;td&gt;Eden区与Survivor区的大小比值&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;设置为8,则两个Survivor区与一个Eden区的比值为2:8,一个Survivor区占整个年轻代的1/10&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-XX:LargePageSizeInBytes&lt;/td&gt;
+      &lt;td&gt;内存页的大小不可设置过大， 会影响Perm的大小&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;=128m&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-XX:+UseFastAccessorMethods&lt;/td&gt;
+      &lt;td&gt;原始类型的快速优化&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-XX:+DisableExplicitGC&lt;/td&gt;
+      &lt;td&gt;关闭System.gc()&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;这个参数需要严格的测试&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-XX:MaxTenuringThreshold&lt;/td&gt;
+      &lt;td&gt;垃圾最大年龄&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;如果设置为0的话,则年轻代对象不经过Survivor区,直接进入年老代. 对于年老代比较多的应用,可以提高效率.如果将此值设置为一个较大值,则年轻代对象会在Survivor区进行多次复制,这样可以增加对象再年轻代的存活 时间,增加在年轻代即被回收的概率，该参数只有在串行GC时才有效。&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-XX:+AggressiveOpts&lt;/td&gt;
+      &lt;td&gt;加快编译&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-XX:+UseBiasedLocking&lt;/td&gt;
+      &lt;td&gt;锁机制的性能改善&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-Xnoclassgc&lt;/td&gt;
+      &lt;td&gt;禁用垃圾回收&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-XX:SoftRefLRUPolicyMSPerMB&lt;/td&gt;
+      &lt;td&gt;每兆堆空闲空间中SoftReference的存活时间&lt;/td&gt;
+      &lt;td&gt;1s&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-XX:PretenureSizeThreshold&lt;/td&gt;
+      &lt;td&gt;对象超过多大是直接在旧生代分配&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;单位字节 新生代采用Parallel Scavenge GC时无效，另一种直接在旧生代分配的情况是大的数组对象,且数组中无外部引用对象.&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-XX:TLABWasteTargetPercent&lt;/td&gt;
+      &lt;td&gt;TLAB占eden区的百分比&lt;/td&gt;
+      &lt;td&gt;1%&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-XX:+CollectGen0First&lt;/td&gt;
+      &lt;td&gt;FullGC时是否先YGC&lt;/td&gt;
+      &lt;td&gt;false&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h2 id=&quot;并行收集器相关参数&quot;&gt;并行收集器相关参数&lt;/h2&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;参数名称&lt;/th&gt;
+      &lt;th&gt;含义&lt;/th&gt;
+      &lt;th&gt;默认值&lt;/th&gt;
+      &lt;th&gt; &lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-XX:+UseParallelGC&lt;/td&gt;
+      &lt;td&gt;Full GC采用parallel MSC(此项待验证)&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;选择垃圾收集器为并行收集器.此配置仅对年轻代有效.即上述配置下,&lt;br /&gt;年轻代使用并发收集,而年老代仍旧使用串行收集.(此项待验证)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-XX:+UseParNewGC&lt;/td&gt;
+      &lt;td&gt;设置年轻代为并行收集&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;可与CMS收集同时使用&lt;br /&gt;JDK5.0以上,JVM会根据系统配置自行设置,所以无需再设置此值&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-XX:ParallelGCThreads&lt;/td&gt;
+      &lt;td&gt;并行收集器的线程数&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;此值最好配置与处理器数目相等 同样适用于CMS&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-XX:+UseParallelOldGC&lt;/td&gt;
+      &lt;td&gt;年老代垃圾收集方式为并行收集(Parallel Compacting)&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;这个是JAVA 6出现的参数选项&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-XX:MaxGCPauseMillis&lt;/td&gt;
+      &lt;td&gt;每次年轻代垃圾回收的最长时间(最大暂停时间)&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;如果无法满足此时间,JVM会自动调整年轻代大小,以满足此值.&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-XX:+UseAdaptiveSizePolicy&lt;/td&gt;
+      &lt;td&gt;自动选择年轻代区大小和相应的Survivor区比例&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;设置此选项后,并行收集器会自动选择年轻代区大小和相应的Survivor区比例,&lt;br /&gt;以达到目标系统规定的最低相应时间或者收集频率等,此值建议使用并行收集器时,一直打开.&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-XX:GCTimeRatio&lt;/td&gt;
+      &lt;td&gt;设置垃圾回收时间占程序运行时间的百分比&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;公式为1/(1+n)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;-XX:+ScavengeBeforeFullGC&lt;/td&gt;
+      &lt;td&gt;Full GC前调用YGC&lt;/td&gt;
+      &lt;td&gt;true&lt;/td&gt;
+      &lt;td&gt;Do young generation GC prior to a full GC. (Introduced in 1.4.1.)&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h2 id=&quot;gc种类&quot;&gt;GC种类&lt;/h2&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;类别&lt;/th&gt;
+      &lt;th&gt;serial collector&lt;/th&gt;
+      &lt;th&gt;parallel collector&lt;/th&gt;
+      &lt;th&gt;concurrent collector&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;介绍&lt;/td&gt;
+      &lt;td&gt;单线程收集器&lt;br /&gt;使用单线程去完成所有的gc工作，没有线程间的通信，这种方式会相对高效&lt;/td&gt;
+      &lt;td&gt;并行收集器&lt;br /&gt;使用多线程的方式，利用多CUP来提高GC的效率&lt;br /&gt;主要以到达一定的吞吐量为目标&lt;/td&gt;
+      &lt;td&gt;并发收集器&lt;br /&gt;使用多线程的方式,利用多CUP来提高GC的效率&lt;br /&gt;并发完成大部分工作，使得gc pause短&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;试用场景&lt;/td&gt;
+      &lt;td&gt;单处理器机器且没有pause time的要求&lt;/td&gt;
+      &lt;td&gt;适用于科学技术和后台处理&lt;br /&gt;有中规模/大规模数据集大小的应用且运行在多处理器上，关注吞吐量(throughput)&lt;/td&gt;
+      &lt;td&gt;适合中规模/大规模数据集大小的应用，应用服务器,电信领域&lt;br /&gt;关注response time，而不是throughput&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;使用&lt;/td&gt;
+      &lt;td&gt;Client模式下默认&lt;br /&gt;可使用&lt;br /&gt;可用-XX:+UseSerialGC强制使用&lt;br /&gt;优点:对server应用没什么优点&lt;br /&gt;缺点:慢,不能充分发挥硬件资源&lt;/td&gt;
+      &lt;td&gt;Server模式下默认&lt;br /&gt;–YGC:PS FGC:Parallel MSC&lt;br /&gt;可用-XX:+UseParallelGC或-XX:+UseParallelOldGC强制指定&lt;br /&gt;–ParallelGC代表FGC为Parallel MSC&lt;br /&gt;–ParallelOldGC代表FGC为Parallel Compacting&lt;br /&gt;优点:高效&lt;br /&gt;缺点:当heap变大后,造成的暂停时间会变得比较长&lt;/td&gt;
+      &lt;td&gt;可用-XX:+UseConcMarkSweepGC强制指定&lt;br /&gt;优点:&lt;br /&gt;对old进行回收时,对应用造成的暂停时间非常端,适合对latency要求比较高的应用&lt;br /&gt;缺点:&lt;br /&gt;1.内存碎片和浮动垃圾&lt;br /&gt;2.old去的内存分配效率低&lt;br /&gt;3.回收的整个耗时比较长&lt;br /&gt;4.和应用争抢CPU&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;内存回收触发&lt;/td&gt;
+      &lt;td&gt;&lt;strong&gt;YGC&lt;/strong&gt;&lt;br /&gt;eden空间不足&lt;br /&gt;&lt;strong&gt;FGC&lt;/strong&gt;&lt;br /&gt;old空间不足&lt;br /&gt;perm空间不足&lt;br /&gt;显示调用System.gc() ,包括RMI等的定时触发&lt;br /&gt;YGC时的悲观策略&lt;br /&gt;dump live的内存信息时(jmap –dump:live)&lt;/td&gt;
+      &lt;td&gt;&lt;strong&gt;YGC&lt;/strong&gt;&lt;br /&gt;eden空间不足&lt;br /&gt;&lt;strong&gt;FGC&lt;/strong&gt;&lt;br /&gt;old空间不足&lt;br /&gt;perm空间不足&lt;br /&gt;显示调用System.gc() ,包括RMI等的定时触发&lt;br /&gt;YGC时的悲观策略–YGC前&amp;amp;YGC后&lt;br /&gt;dump live的内存信息时(jmap –dump:live)&lt;/td&gt;
+      &lt;td&gt;&lt;strong&gt;YGC&lt;/strong&gt;&lt;br /&gt;eden空间不足&lt;br /&gt;&lt;strong&gt;CMS GC&lt;/strong&gt;&lt;br /&gt;1.old Gen的使用率大的一定的比率 默认为92%&lt;br /&gt;2.配置了CMSClassUnloadingEnabled,且Perm Gen的使用达到一定的比率 默认为92%&lt;br /&gt;3.Hotspot自己根据估计决定是否要触法&lt;br /&gt;4.在配置了ExplictGCInvokesConcurrent的情况下显示调用了System.gc.&lt;br /&gt;Full GC(Serial MSC)&lt;br /&gt;promotion failed 或 concurrent Mode Failure时&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;内存回收触发时发生了什么&lt;/td&gt;
+      &lt;td&gt;&lt;strong&gt;YGC&lt;/strong&gt;&lt;br /&gt;清空eden+from中所有no ref的对象占用的内存&lt;br /&gt;将eden+from中的所有存活的对象copy到to中&lt;br /&gt;在这个过程中一些对象将晋升到old中:&lt;br /&gt;–to放不下的&lt;br /&gt;–存活次数超过tenuring threshold的&lt;br /&gt;重新计算Tenuring Threshold;&lt;br /&gt;单线程做以上动作&lt;br /&gt;全程暂停应用&lt;br /&gt;&lt;strong&gt;FGC&lt;/strong&gt;&lt;br /&gt;如果配置了CollectGen0First,则先触发YGC&lt;br /&gt;清空heap中no ref的对象,permgen中已经被卸载的classloader中加载的class的信息&lt;br /&gt;单线程做以上动作&lt;br /&gt;全程暂停应用&lt;/td&gt;
+      &lt;td&gt;&lt;strong&gt;YGC&lt;/strong&gt;&lt;br /&gt;同serial动作基本相同,不同点:&lt;br /&gt;1.多线程处理&lt;br /&gt;2.YGC的最后不仅重新计算Tenuring Threshold,还会重新调整Eden和From的大小&lt;br /&gt;&lt;strong&gt;FGC&lt;/strong&gt;&lt;br /&gt;1.如配置了ScavengeBeforeFullGC(默认),则先触发YGC&lt;br /&gt;2.MSC:清空heap中的no ref对象,permgen中已经被卸载的classloader中加载的class信息,并进行压缩&lt;br /&gt;3.Compacting:清空heap中部分no ref的对象,permgen中已经被卸载的classloader中加载的class信息,并进行部分压缩&lt;br /&gt;多线程做以上动作.&lt;/td&gt;
+      &lt;td&gt;&lt;strong&gt;YGC&lt;/strong&gt;&lt;br /&gt;同serial动作基本相同,不同点:&lt;br /&gt;1.多线程处理&lt;br /&gt;CMSGC:&lt;br /&gt;1.old gen到达比率时只清除old gen中no ref的对象所占用的空间&lt;br /&gt;2.perm gen到达比率时只清除已被清除的classloader加载的class信息&lt;br /&gt;&lt;strong&gt;FGC&lt;/strong&gt;&lt;br /&gt;同serial&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;细节参数&lt;/td&gt;
+      &lt;td&gt;可用-XX:+UseSerialGC强制使用&lt;br /&gt;-XX:SurvivorRatio=x,控制eden/s0/s1的大小&lt;br /&gt;-XX:MaxTenuringThreshold,用于控制对象在新生代存活的最大次数&lt;br /&gt;-XX:PretenureSizeThreshold=x,控制超过多大的字节的对象就在old分配.&lt;/td&gt;
+      &lt;td&gt;-XX:SurvivorRatio=x,控制eden/s0/s1的大小&lt;br /&gt;-XX:MaxTenuringThreshold,用于控制对象在新生代存活的最大次数&lt;br /&gt;-XX:UseAdaptiveSizePolicy 去掉YGC后动态调整eden from已经tenuringthreshold的动作&lt;br /&gt;-XX:ParallelGCThreads 设置并行的线程数&lt;/td&gt;
+      &lt;td&gt;-XX:CMSInitiatingOccupancyFraction 设置old gen使用到达多少比率时触发&lt;br /&gt;-XX:CMSInitiatingPermOccupancyFraction,设置PermGen使用到达多少比率时触发&lt;br /&gt;-XX:+UseCMSInitiatingOccupancyOnly禁止hostspot自行触发CMS GC&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h2 id=&quot;gc性能方面的考虑&quot;&gt;GC性能方面的考虑&lt;/h2&gt;
+
+&lt;p&gt;对于GC的性能主要有2个方面的指标：&lt;font style=&quot;color:red&quot;&gt;吞吐量throughput（工作时间不算gc的时间占总的时间比）和暂停pause（gc发生时app对外显示的无法响应）。&lt;/font&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;Total Heap&lt;/p&gt;
+
+    &lt;p&gt;默认情况下，vm会增加/减少heap大小以维持free space在整个vm中占的比例，这个比例由MinHeapFreeRatio和MaxHeapFreeRatio指定。&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;一般而言，server端的app会有以下规则：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;对vm分配尽可能多的memory&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;将Xms和Xmx设为一样的值。如果虚拟机启动时设置使用的内存比较小，这个时候又需要初始化很多对象，虚拟机就必须重复地增加内存。&lt;/li&gt;
+  &lt;li&gt;处理器核数增加，内存也跟着增大。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;span&gt;2. The Young Generation&lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;另外一个对于app流畅性运行影响的因素是young generation的大小。young generation越大，minor collection越少；但是在固定heap size情况下，更大的young generation就意味着小的tenured generation，就意味着更多的major collection(major collection会引发minor collection)。&lt;/p&gt;
+
+&lt;p&gt;NewRatio反映的是young和tenured generation的大小比例。NewSize和MaxNewSize反映的是young generation大小的下限和上限，将这两个值设为一样就固定了young generation的大小（同Xms和Xmx设为一样）。&lt;/p&gt;
+
+&lt;p&gt;如果希望，SurvivorRatio也可以优化survivor的大小，不过这对于性能的影响不是很大。SurvivorRatio是eden和survior大小比例。&lt;/p&gt;
+
+&lt;p&gt;一般而言，server端的app会有以下规则：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;首先决定能分配给vm的最大的heap size，然后设定最佳的young generation的大小&lt;/li&gt;
+  &lt;li&gt;如果heap size固定后，增加young generation的大小意味着减小tenured generation大小。让tenured generation在任何时候够大，能够容纳所有live的data（留10%-20%的空余）。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;经验规则&quot;&gt;经验&amp;amp;&amp;amp;规则&lt;/h2&gt;
+&lt;ol&gt;
+  &lt;li&gt;年轻代大小选择
+    &lt;ul&gt;
+      &lt;li&gt;响应时间优先的应用:尽可能设大，直到接近系统的最低响应时间限制(根据实际情况选择)。在此种情况下，年轻代收集发生的频率也是最小的。同时，减少到达年老代的对象。&lt;/li&gt;
+      &lt;li&gt;吞吐量优先的应用:尽可能的设置大，可能到达Gbit的程度。因为对响应时间没有要求，垃圾收集可以并行进行，一般适合8CPU以上的应用。&lt;/li&gt;
+      &lt;li&gt;避免设置过小.当新生代设置过小时会导致:1.YGC次数更加频繁 2.可能导致YGC对象直接进入旧生代，如果此时旧生代满了会触发FGC。&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;年老代大小选择
+    &lt;ul&gt;
+      &lt;li&gt;响应时间优先的应用:年老代使用并发收集器,所以其大小需要小心设置，一般要考虑并发会话率和会话持续时间等一些参数。如果堆设置小了，可以会造成内存碎 片,高回收频率以及应用暂停而使用传统的标记清除方式;如果堆大了,则需要较长的收集时间。最优化的方案，一般需要参考以下数据获得：&lt;font style=&quot;color:red&quot;&gt;并发垃圾收集信息、持久代并发收集次数、传统GC信息、花在年轻代和年老代回收上的时间比例&lt;/font&gt;。&lt;/li&gt;
+      &lt;li&gt;吞吐量优先的应用:一般吞吐量优先的应用都有一个很大的年轻代和一个较小的年老代。原因是，这样可以尽可能回收掉大部分短期对象，减少中期的对象，而年老代尽存放长期存活对象。&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;较小堆引起的碎片问题
+    &lt;ul&gt;
+      &lt;li&gt;因为年老代的并发收集器使用标记，清除算法，所以不会对堆进行压缩。当收集器回收时，他会把相邻的空间进行合并,这样可以分配给较大的对象。但是，当堆空间较小时，运行一段时间以后,就会出现”碎片”,如果并发收集器找不到足够的空间，那么并发收集器将会停止，然后使用传统的标记，清除方式进行回收。如果出现”碎片”，可能需要进行如下配置：&lt;br /&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+&lt;font style=&quot;color:red&quot;&gt;
+-XX:+UseCMSCompactAtFullCollection：使用并发收集器时,开启对年老代的压缩。&lt;br /&gt;
+-XX:CMSFullGCsBeforeCompaction=0：上面配置开启的情况下,这里设置多少次Full GC后,对年老代进行压缩。&lt;/font&gt;
+&lt;ol&gt;
+  &lt;li&gt;用64位操作系统，Linux下64位的jdk比32位jdk要慢一些，但是吃得内存更多，吞吐量更大。&lt;/li&gt;
+  &lt;li&gt;XMX和XMS设置一样大，MaxPermSize和MinPermSize设置一样大，这样可以减轻伸缩堆大小带来的压力。&lt;/li&gt;
+  &lt;li&gt;使用CMS的好处是用尽量少的新生代，经验值是128M－256M， 然后老生代利用CMS并行收集， 这样能保证系统低延迟的吞吐效率。 实际上cms的收集停顿时间非常的短，2G的内存， 大约20－80ms的应用程序停顿时间。&lt;/li&gt;
+  &lt;li&gt;系统停顿的时候可能是GC的问题也可能是程序的问题，多用jmap和jstack查看，或者killall -3 java，然后查看java控制台日志，能看出很多问题。&lt;/li&gt;
+  &lt;li&gt;仔细了解自己的应用，如果用了缓存，那么年老代应该大一些，缓存的HashMap不应该无限制长，建议采用LRU算法的Map做缓存，LRUMap的最大长度也要根据实际情况设定。&lt;/li&gt;
+  &lt;li&gt;采用并发回收时，年轻代小一点，年老代要大，因为年老大用的是并发回收，即使时间长点也不会影响其他程序继续运行，网站不会停顿。&lt;/li&gt;
+  &lt;li&gt;JVM参数的设置(特别是 –Xmx –Xms –Xmn -XX:SurvivorRatio  -XX:MaxTenuringThreshold等参数的设置没有一个固定的公式，需要根据PV old区实际数据 YGC次数等多方面来衡量。为了避免promotion faild可能会导致xmn设置偏小，也意味着YGC的次数会增多，处理并发访问的能力下降等问题。每个参数的调整都需要经过详细的性能测试，才能找到特定应用的最佳配置。&lt;/li&gt;
+&lt;/ol&gt;
+</description>
+        <pubDate>Sun, 22 Jan 2017 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2017/01/22/JVM-%E8%B0%83%E4%BC%98%E5%8F%82%E6%95%B0%E8%AF%A6%E8%A7%A3/</link>
+        <guid isPermaLink="true">http://localhost:4000/2017/01/22/JVM-%E8%B0%83%E4%BC%98%E5%8F%82%E6%95%B0%E8%AF%A6%E8%A7%A3/</guid>
+        
+        <category>Java virtual machines</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>JVM虚拟机32位和64位的探索</title>
+        <description>&lt;blockquote&gt;
+  &lt;p&gt;32位和64位系统在计算机领域中常常提及，而对应的应用程序也出现了32位和64位两个版本，那么这两者之间有什么区别呢？&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;ia介绍&quot;&gt;IA介绍&lt;/h2&gt;
+
+&lt;h4 id=&quot;简介&quot;&gt;简介&lt;/h4&gt;
+
+&lt;p&gt;说到处理器，大家用的最多的莫过于Intel的处理器了，所以本文主要从Intel的处理器讲解32位和64位的处理器之分。&lt;/p&gt;
+
+&lt;p&gt;通常将采用Intel（英特尔）处理器的服务器称之为IA（IntelArchitecture）架构服务器，又称 CISC（ComplexInstructionSetComputer复杂指令集）架构服务器，由于IA架构的服务器是基于PC的x86处理器体系结 构，所以又把IA架构的服务器称为PC服务器或者x86服务器。&lt;/p&gt;
+
+&lt;p&gt;虽然IA构架服务器始于PC,但经过不断的发展，IA架构服务器已经远远超出了PC的概念。 
+IA架构根据intel的官方声明，分为以下三类：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;IA-32&lt;/li&gt;
+  &lt;li&gt;Intel® 64&lt;/li&gt;
+  &lt;li&gt;IA-64&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;历史&quot;&gt;历史&lt;/h4&gt;
+
+&lt;p&gt;x86架构于1978年推出的Intel 8086中央处理器中首度出现，它是从Intel 8008处理器中发展而来的，而8008则是发展自Intel 4004的。8086在三年后为IBM PC所选用，之后x86便成为了个人电脑的标准平台，成为了历来最成功的CPU架构。&lt;/p&gt;
+
+&lt;p&gt;其他公司也有制造x86架构的处理器，计有Cyrix（现为VIA所收购）、NEC集团、IBM、IDT以及Transmeta。Intel以外最成功的制造商为AMD。 
+8086是16位处理器；直到1985年32位的80386的开发，这个架构都维持是16位。 
+Intel 80386 32位处理器推出后，也许是到目前为止x86架构的最大跃进。Linux、386BSD、Windows NT和Windows 95都是一开始为386所发展,这种386的基本架构变成未来所有x86系列发展的基础。&lt;/p&gt;
+
+&lt;p&gt;现时Intel把x86-32称为IA-32，全名为”Intel Architecture, 32-bit”。&lt;/p&gt;
+
+&lt;p&gt;随后IA服务器经历了486系统、PentiumPro系统、PII系统、PIII系统、XEON系统等几个阶段。处理器系统的处理能力在大幅度提高，而服务器系统的总线结构始终是IA-32总线体系。 
+IA-32服务器在发展到8路XEON服务器以后，体系结构已经开始成为制约服务器性能提高的瓶颈。 
+因此，hp和Intel自1994年开始合作开发IA－64架构的处理器，IA-64结构既不是Intel的32位x86结构的扩充，也不是完全采用hp公司64位PA-RISC结构，而是一种全新的设计样式。目前正式宣布支持IA-64平台的有Monterey、Linux64、hp-UX、Solaris、Win2000,Windows xp等操作系统。 
+IA-64的代表产品就是Itanium(安腾)处理器,是专门用在高端企业级64-bit计算环境中竞争的，对抗基于IBM Power4/5，HP PA-RISC，Sun UltraSparc-III及DEC Alpha的高端企业级处理器。&lt;/p&gt;
+
+&lt;p&gt;但由于它不能很好地解决与以前32位应用程序的兼容，所以应用受到较大的限制，而AMD在IA-32上新增了64位寄存器，并兼容早期的16位和32位软件，形成AMD64版本。尽管目前Intel采取了各种软、硬方法来弥补这一不足，但随着AMD64处理器的全面投入，Intel的IA－64架构的这两款处理器前景不容乐观。&lt;/p&gt;
+
+&lt;p&gt;为x86系统而设的应用软件实在太庞大，Intel眼见使用AMD64的Opteron及Athlon 64取得成功，便需要对竞争者的威胁作出迎击,也开发了兼容早期16位和32的64位处理器，Intel将之命名为”IA-32E”，意即IA-32的延伸，在数星期后才改称为EM64T。虽然该处理器的内核与AMD64几乎相同，但是在以往Intel的营销中，Intel总把AMD的产品贬为自家技术的仿制品，Intel为了自身的面子，定不会承认使用了对手AMD的技术，因此Intel把该技术以EM64T这个名字来推出，后来Intel索性将此技术正式命名为Intel 64。&lt;/p&gt;
+
+&lt;p&gt;Intel 64指令集被应用于Pentium 4、Pentium D、Pentium Extreme Edition、Celeron D、Xeon、Intel Core 2及Intel Core i7处理器上。&lt;/p&gt;
+
+&lt;p&gt;由于AMD64和Intel64基本上一致，很多软硬件产品都使用一种不倾向任何一方的词汇来表明它们对两种架构的同时兼容。出于这个目的，AMD对这种CPU架构的原始称呼——”x86-64”被不时地使用，还有变体”x86_64”。其他公司如微软和太阳计算机系统公司在营销资料中使用”x64”作为对”x86-64”的缩写。&lt;/p&gt;
+
+&lt;h4 id=&quot;em64t技术详解&quot;&gt;EM64T技术详解&lt;/h4&gt;
+
+&lt;p&gt;Intel官方是给EM64T这样定义地：EM64T全称Extended Memory 64 Technology，即64位内存扩展技术，他是Intel IA-32架构（Intel Architectur-32 extension）地一个扩展，且兼容原来地架构。通过增加CPU地运算位宽扩展增加cpu和内存之间地位宽，从而让系统支持更大容量地内存（32bit处理器最多只能支持内存容量只有4GB，而64bit地最高则达64GB）。在理论上，虽然EM64T架构最高能够很好的运行在64 bit内存寻址，但由于设计和制造工艺等方面地因素，并非所有EM64T地处理器都能达到理论地上限。&lt;/p&gt;
+
+&lt;p&gt;传统IA-32模式下，与IA-32工作模式一样，我们可以安装windows xp 32bit，安装32位硬件硬件驱动，安装32位应用程序。目前大部分人的处理器是Intel 64，安装了windows xp 32，上面的程序运行情况良好，包括16bit和32bit程序。&lt;/p&gt;
+
+&lt;p&gt;兼容模式下，操作系统和硬件驱动程序都是64bit，计算机允许在64bit操作系统下不需要预编译就可以运行大多数传统32bit应用程序，这和传统IA-32模式下基本相同，32位应用程序仍然只能访问4G内存，但此限制只在进程级，而不在系统级。&lt;/p&gt;
+
+&lt;p&gt;由于兼容模式下，要求硬件驱动程序都是64bit，所以导致了64位Windows最大的一个劣势就是兼容性，而兼容性方面最突出的就是各种硬件设备的驱动程序。，如果你所用的硬件设备的开发商还没有开发出针对64位Windows XP的驱动程序，那么要么该设备在64位Windows XP下无法使用，要么使用操作系统自带的通用驱动勉强使用，但是性能和功能都会受到影响。至于其他软件程序则一般没有什么大问题。在64位Windows XP中，只有16位应用程序是完全无法使用的，而32位应用程序则可以继续使用。不过在安装这些应用程序的时候也要注意，有些应用程序，虽然和硬件扯不上关系，但是为了实现软件的某些特殊功能，安装软件的时候同时还会向系统中装入驱动程序，这种程序在没有发布64位版之前是无法在64位Windows下使用的。&lt;/p&gt;
+
+&lt;p&gt;如著名的截图软件SnagIt，该软件使用默认安装的时候会向系统中安装一个虚拟的打印机，该打印机可以将文档输出为图形格式。因为安装了虚拟设备，因而该程序还没有提供64位的版本，因此在64位Windows XP下使用默认选项安装的时候就会出错，除非我们自定义安装选项，不安装这个虚拟打印机。&lt;/p&gt;
+
+&lt;p&gt;但是对于服务器来说，服务器不需要什么外设，硬件的兼容性差对服务器的影响较小。&lt;/p&gt;
+
+&lt;p&gt;64bit模式下，必须要有64bit地操作系统、驱动程序和应用程序三者合作,这时操作系统无法运行32位程序，兼容性最差，但充分发挥64位架构的优势。&lt;/p&gt;
+
+&lt;h2 id=&quot;操作系统32-bit和操作系统64-bit&quot;&gt;操作系统32 bit和操作系统64 bit&lt;/h2&gt;
+
+&lt;p&gt;所谓32位处理器就是一次只能处理32位，也就是4个字节的数据，而64位处理器一次就能处理64位，即8个字节的数据。比32位提高了一倍，理论上性能会提升1倍。但这是建立在64bit操作系统，64bit软件的基础上的。如果我们将总长128位的指令分别按照16位、32位、64位为单位进行编辑的话：旧的16位处理器，比如Intel 80286 CPU需要8个指令，32位的处理器需要4个指令，而64位处理器则只要两个指令，显然，在工作频率相同的情况下，64位处理器的处理速度会比16位、32位的更快。而且除了运算能力之外，与32位处理器相比，&lt;font style=&quot;color:red&quot;&gt;64位处理器的优势还体现在系统对内存的控制上&lt;/font&gt;。由于地址使用的是特殊的整数，而64位处理器的一个ALU（算术逻辑运算器）和寄存器可以处理更大的整数，也就是更大的地址。传统32位处理器的寻址空间最大为4GB，使得很多需要大容量内存的数据处理程序在这时都会显得捉襟见肘，形成了运行效率的瓶颈。而64位的处理器在理论上则可以达到&lt;font style=&quot;color:red&quot;&gt;1800万个TB&lt;/font&gt;，1TB等于1024GB，1GB等于1024MB，所以64位的处理器能够彻底解决32位计算系统所遇到的瓶颈现象，速度快人一等，对于那些要求多处理器可扩展性、更大的可寻址内存、视频/音频/三维处理或较高计算准确性的应用程序而言，64位处理器可提供卓越的性能。&lt;/p&gt;
+
+&lt;p&gt;虽然64位CPU一次可提取64位数据，但是我们不能因为数字上的变化，而简单的认为64bit处理器的性能是 32bit处理器性能的两倍。实际上在32bit应用程序下，32bit处理器的性能甚至会更强，即使是64bit处理器，目前情况下也是在32bit应用下性能更强。所以要认清64bit处理器的优势，但不可迷信64bit。&lt;/p&gt;
+
+&lt;h2 id=&quot;jvm-32-bit和jvm-64-bit&quot;&gt;JVM 32 bit和JVM 64 bit&lt;/h2&gt;
+
+&lt;p&gt;理论上来说32位的JVM有4G的堆大小限制。但是因为各种条件限制比如交换区，内核地址空间使用，内存碎片，虚拟管理机的管理开销，实际上可用的堆的大小远远比理论上的4G要少。&lt;/p&gt;
+
+&lt;p&gt;在32位windows的机器上，堆最大可以达到1.4G至1.6G。&lt;br /&gt;
+在32位solaris的机器上，堆最大可以达到2G &lt;br /&gt;
+而在64位的操作系统上，32位的JVM，堆大小可以达到4G&lt;/p&gt;
+
+&lt;h5 id=&quot;那实际上32位和64位jdk有什么区别呢&quot;&gt;那实际上32位和64位JDK有什么区别呢？&lt;/h5&gt;
+&lt;p&gt;JVM 32bit 和JVM 64bit的区别如下:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;目前只有server VM支持64bit JVM，client不支持32bit JVM。&lt;/li&gt;
+  &lt;li&gt;The Java Plug-in, AWT Robot and Java Web Start这些组件目前不支持64bit JVM&lt;/li&gt;
+  &lt;li&gt;本地代码的影响：对JNI的编程接口没有影响，但是针对32-bit VM写的代码必须重新编译才能在64-bit VM工作。&lt;/li&gt;
+  &lt;li&gt;32-bit JVM堆大小最大是4G, 64-bit VMs 上, Java堆的大小受限于物理内存和操作系统提供的虚拟内存。(这里的堆并不严谨)&lt;/li&gt;
+  &lt;li&gt;线程的默认堆栈大小：在windows上32位JVM,默认堆栈最大是320k 64-bit JVM是1024K。&lt;/li&gt;
+  &lt;li&gt;性能影响:
+    &lt;ol&gt;
+      &lt;li&gt;64bit JVM相比32bit JVM,在大量的内存访问的情况下，其性能损失更少，AMD64和EM64T平台在64位模式下运行时，Java虚拟机得到了一些额外的寄存器，它可以用来生成更有效的原生指令序列。&lt;/li&gt;
+      &lt;li&gt;性能上，在SPARC 处理器上，当一个java应用程序从32bit 平台移植到64bit平台的64bit JVM会用大约 10-20%的性能损失，而在AMD64和 EM64T平台上，其性能损失的范围在0-15%。&lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;以上摘自：http://java.sun.com/docs/hotspot/HotSpotFAQ.html#64bit_description&lt;/p&gt;
+
+&lt;h2 id=&quot;jvm-性能分析&quot;&gt;JVM 性能分析&lt;/h2&gt;
+
+&lt;p&gt;Sun的官网上写着,当一个java应用程序从32bit 平台移植到64bit平台的64bit JVM上,&lt;font style=&quot;color:red&quot;&gt;应用会有性能损失&lt;/font&gt;，相信很多人都会不解。 
+从数字上看，我们一般会认为64位JDK比32位JDK好，但是上文说过”实际上在32bit应用程序下，32bit处理器的性能甚至会更强，即使是64bit处理器，目前情况下也是在32bit应用下性能更强”。&lt;/p&gt;
+
+&lt;p&gt;许多在大同世界里很简单的道理包括越多大越好，移到计算机领域里就不是那么回事了。当处理多重CPU时，你会觉得那些多核所多出来的处理单元很有用，但如果你的工作仅仅是单线程的，那你要做的却是让其他核一边歇着。&lt;/p&gt;
+
+&lt;p&gt;32位与64位的比较则更加细微。x86-64 架构不仅在x86架构的基础上增大了寄存器，而且还增加了寄存器的数量。从基本上说这会带来更好的性能（因为更多的寄存器可以让编译器创建更好的机器代码）。然而很不幸，至今把Java从32位移到64位带来的只是性能的下降。&lt;/p&gt;
+
+&lt;p&gt;Java虚拟机（JVM）是一个软件规范，其32位与64位版本性能有所不同，但它们都包括JIT编译器和垃圾回收功能（GC）,其性能关键在JIT编译器和垃圾回收功能的执行效率上。 JIT编译器实现了程序执行之前Java字节码到硬件机器码的动态翻译，其背后的思想在于，相比Java源代码，字节码更小也更容易编译，但付出的代价是需要在Java字节码编译为机器码时花上一点时间，但与直接把Java源代码编译为机器码相比，时间还是少得多的。在32位与64位的JVM中，相应的JIT在把Java字节码编译为最终的机器码时，所花的时间稍微有所不同，但还能进行一些优化；另外，在IBM与Sun这两个版本的客户端与服务端程序上，总体性能也会有所不同。 垃圾回收会收回对象不再需要使用的内存,它必须被经常执行以释放对象不再访问的Java堆。由于在32位与64位平台上，Java堆中的数据大小会有所变化，所以会因为32位与64位JVM的性能差异，&lt;font style=&quot;color:red&quot;&gt;然而指针越大越GC管理越困难&lt;/font&gt;,导致相应垃圾回收的性能也会有所不同。&lt;/p&gt;
+
+&lt;h2 id=&quot;hotspot-jvm-对象指针压缩&quot;&gt;Hotspot JVM 对象指针压缩&lt;/h2&gt;
+&lt;p&gt;前面说完了JVM 32 bit 和 JVM 64 bit 之间的区别，我们知道由于64位每个指令是8个字节，而32位的指令是4个字节，因此通常64位JVM消耗的内存会比32位的大1.5倍，这是因为对象指针在64位架构下，长度会翻倍（更宽的寻址）。对于那些将要从32位平台移植到64位的应用来说，平白无辜多了1/2的内存占用。&lt;/p&gt;
+
+&lt;p&gt;幸运的是，从JDK 1.6 update14开始，64 bit JVM正式支持了 -XX:+UseCompressedOops 这个可以&lt;font style=&quot;color:red&quot;&gt;压缩指针&lt;/font&gt;，起到节约内存占用的新参数。&lt;/p&gt;
+
+&lt;h5 id=&quot;什么是-oop-&quot;&gt;什么是 OOP ?&lt;/h5&gt;
+&lt;p&gt;OOP = “ordinary object pointer” 普通对象指针。&lt;br /&gt;
+启用CompressOops后，会压缩的对象：&lt;br /&gt;&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;每个Class的属性指针（静态成员变量）&lt;/li&gt;
+  &lt;li&gt;每个对象的属性指针&lt;/li&gt;
+  &lt;li&gt;普通对象数组的每个元素指针&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;当然，压缩也不是万能的，针对一些特殊类型的指针，JVM是不会优化的。
+比如指向PermGen的Class对象指针，本地变量，堆栈元素，入参，返回值，NULL指针不会被压缩。&lt;/p&gt;
+
+&lt;h5 id=&quot;怎么启用&quot;&gt;怎么启用？&lt;/h5&gt;
+&lt;p&gt;在启动java时，加 -XX:+UseCompressedOops (需要jdk1.6.0_14)&lt;/p&gt;
+
+&lt;h5 id=&quot;零基压缩优化zero-based-compressd-oops&quot;&gt;零基压缩优化(Zero Based Compressd Oops)&lt;/h5&gt;
+&lt;p&gt;零基压缩是针对压解压动作的进一步优化。&lt;br /&gt;
+它通过改变正常指针的随机地址分配特性，强制从零开始做分配（需要OS支持），进一步提高了压解压效率。&lt;br /&gt;
+要启用零基压缩，你分配给JVM的内存大小必须控制在4G以上，32G以下。如果小于4G，那么JVM会使用低虚拟地址空间（low virutal address space，64位下模拟32位），这样就不需要做压解压动作了。而对于大于32G，将采用默认的随机地址分配特性，进行压解压。&lt;/p&gt;
+
+</description>
+        <pubDate>Sat, 21 Jan 2017 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2017/01/21/%E5%85%B3%E4%BA%8EJVM%E8%99%9A%E6%8B%9F%E6%9C%BA32%E4%BD%8D%E5%92%8C64%E4%BD%8D%E7%9A%84%E6%8E%A2%E7%B4%A2/</link>
+        <guid isPermaLink="true">http://localhost:4000/2017/01/21/%E5%85%B3%E4%BA%8EJVM%E8%99%9A%E6%8B%9F%E6%9C%BA32%E4%BD%8D%E5%92%8C64%E4%BD%8D%E7%9A%84%E6%8E%A2%E7%B4%A2/</guid>
+        
+        <category>Java virtual machines</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>初识JAVA虚拟机</title>
+        <description>&lt;blockquote&gt;
+  &lt;p&gt;最近公司项目上线，需要去机房部署上线程序，然后进行数据迁移并且与核心业务系统挂接，在这段时间中，遇到了各种系统配置问题。之从未深入了解过Java虚拟机方面的知识，只是仅仅作为一款主流开发语言进行程序设计，却不曾想过在生产环境则需要掌握更深的知识。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;要说JVM是什么，首先得区分清楚场景&lt;/p&gt;
+
+&lt;p&gt;光谈部署量的话，搞不好现在部署量最多的JVM是Dalvik / ART…虽然Google会告诉大家Dalvik和ART不是“JVM”，但大家都知道骨子里它就是不折不扣的JVM，毫无疑问。它们的设计处处有标注对JVM规范的参考，以保证语义符合JVM规范的要求；那个基于寄存器的字节码设计只是一种实现优化而已。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://www.chenyan.pro/img/2017-01/JVMversion.png&quot; alt=&quot;image description&quot; /&gt;&lt;/p&gt;
+
+&lt;h5 id=&quot;java-se--java-ee&quot;&gt;Java SE / Java EE&lt;/h5&gt;
+
+&lt;p&gt;在这个类别下，主流选择有：（按流行程度递减）&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;HotSpot VM&lt;/li&gt;
+  &lt;li&gt;J9 VM&lt;/li&gt;
+  &lt;li&gt;Zing VM&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h6 id=&quot;hotspot-vm&quot;&gt;Hotspot VM&lt;/h6&gt;
+
+&lt;p&gt;HotSpot VM是绝对的主流。大家用它的时候很可能就没想过还有别的选择，或者是为了迁就依赖了Oracle/Sun JDK某些具体实现的烂代码而选择用HotSpot VM省点心。&lt;/p&gt;
+
+&lt;p&gt;Oracle / Sun JDK、OpenJDK的各种变种（例如IcedTea、Zulu），用的都是相同核心的HotSpot VM。
+从Java SE 7开始，HotSpot VM就是Java规范的“参考实现”（RI，Reference Implementation）。把它叫做“标准JVM”完全不为过。&lt;/p&gt;
+
+&lt;p&gt;当大家说起“Java性能如何如何”、“Java有多少种GC”、“JVM如何调优”云云，经常默认说的就是特指HotSpot VM。可见其“主流性”。&lt;/p&gt;
+
+&lt;p&gt;其中，JDK8的HotSpot VM已经是以前的HotSpot VM与JRockit VM的合并版，也就是传说中的“HotRockit”，只是产品里名字还是叫HotSpot VM。
+这个合并并不是要把JRockit的部分代码插进HotSpot里，而是把前者一些有价值的功能在后者里重新实现一遍。移除PermGen、Java Flight Recorder、jcmd等都属于合并项目的一部分。&lt;/p&gt;
+
+&lt;h6 id=&quot;j9-vm&quot;&gt;J9 VM&lt;/h6&gt;
+
+&lt;p&gt;J9是IBM开发的一个高度模块化的JVM。&lt;/p&gt;
+
+&lt;p&gt;在许多平台上，IBM J9 VM都只能跟IBM产品一起使用。这不是技术限制，而是许可证限制。
+例如说在Windows上IBM JDK不是免费公开的，而是要跟IBM其它产品一起捆绑发布的；使用IBM Rational、IBM WebSphere的话都有机会用到J9 VM（也可以自己选择配置使用别的Java SE JVM）。
+根据许可证，这种捆绑在产品里的J9 VM不应该用于运行别的Java程序…大家有没有自己“偷偷的”拿来跑别的程序IBM也没力气管（咳咳&lt;/p&gt;
+
+&lt;p&gt;而在一些IBM的硬件平台上，很少客户是只买硬件不买配套软件的，IBM给一整套解决方案，里面可能就包括了IBM JDK。这样自然而然就用上了J9 VM。&lt;/p&gt;
+
+&lt;p&gt;所以J9 VM得算在主流里，虽然很少是大家主动选择的首选。&lt;/p&gt;
+
+&lt;p&gt;J9 VM的性能水平大致跟HotSpot VM是一个档次的。有时HotSpot快些，有时J9
+快些。
+不过J9 VM有一些HotSpot VM在JDK8还不支持的功能，最显著的一个就是J9支持AOT编译和更强大的class data sharing。&lt;/p&gt;
+
+&lt;h6 id=&quot;zing-vm&quot;&gt;Zing VM&lt;/h6&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://www.chenyan.pro/img/2017-01/ZingJVM.png&quot; alt=&quot;image description&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Zing VM是一个从Sun HoSpot VM fork出来的一个高性能JVM，可以运行在Linux/x86-64平台上。Azul为它重新写了一套GC，也修改了VM内的许多实现细节，所以从我们自己的角度看，与其说它是HotSpot VM的一个变种，还不如把它看作“一个全新的JVM、只是凑巧与HotSpot VM很像”更合适。&lt;/p&gt;
+
+&lt;p&gt;在要求低延迟、快速预热等的场景里，Zing VM都会比HotSpot VM表现更好。
+Zing的C4 GC目前可以支持1TB的-Xmx，而且GC暂停时间仍然可以维持在&amp;lt; 10ms的范围里。实际上Zing现在能支持接近2TB的-Xmx。
+Zing的ReadyNow!功能可以利用之前收集到的profile数据，引导JVM在启动后快速达到稳定的高性能水平，减少启动后从解释执行到JIT编译的等待时间。
+Zing自带的ZVision / ZVRobot功能可以方便用户监控JVM的运行状态，从找出代码热点到对象分配监控、锁竞争监控等都可以做到。&lt;/p&gt;
+
+&lt;p&gt;最关键的是，Zing能让普通没有为GC之类的底层方向调优的Java应用享有低延迟、快速预热、易于监控的功能，为用户节省苦苦调优的精力和时间。这是Zing的主要价值——很多Java应用都可以通过长期努力在应用/框架层面优化来提升性能，但使用Zing的话就可以更多把精力集中在业务方面。&lt;/p&gt;
+
+&lt;h5 id=&quot;研究性质的jvm&quot;&gt;研究性质的JVM&lt;/h5&gt;
+
+&lt;p&gt;去找比较新的、跟JVM相关的学术界的研究论文，基本上就下面几个JVM可选：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Jikes RVM&lt;/li&gt;
+  &lt;li&gt;Maxine VM&lt;/li&gt;
+  &lt;li&gt;Graal VM&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;这仨就算是现在的主流研究性JVM吧。&lt;/p&gt;
+
+&lt;h6 id=&quot;jikes-rvm&quot;&gt;Jikes RVM&lt;/h6&gt;
+
+&lt;p&gt;Jikes RVM是IBM开发的专门用来研究JVM实现技术的项目。曾用名Jalapeño。
+它是一个元循环虚拟机（metacircular VM），整个JVM都是用Java实现的。&lt;/p&gt;
+
+&lt;p&gt;最有趣的地方是它有一个名为MMTk的框架：Jikes RVM - MMTk，可以很方便的编写新的GC算法插入到Jikes RVM里去，而且已有的实现的选择也很丰富。所以很多研究GC算法的论文会选择基于Jikes RVM/MMTk来做初步实现，不但做起来容易，还可以很方便的与别的算法对比。&lt;/p&gt;
+
+&lt;h6 id=&quot;maxine-vm&quot;&gt;Maxine VM&lt;/h6&gt;
+
+&lt;p&gt;Maxine VM是Oracle/Sun Labs开发的研究项目。跟Jikes RVM一样是元循环虚拟机。
+Maxine VM自从有了C1X/T1X编译器之后，性能似乎就超过了Jikes RVM；有了Graal编译器之后更加压倒Jikes RVM。做JIT编译器研究的话我会选择用Maxine VM。&lt;/p&gt;
+
+&lt;h6 id=&quot;graal-vm&quot;&gt;Graal VM&lt;/h6&gt;
+
+&lt;p&gt;Graal VM就是Maxine VM的Graal编译器插在HotSpot VM上。现在Oracle Labs和一些大学做JIT编译器研究都是基于Graal VM来做的，效果出奇的好，性能基本跟HotSpot Server Compiler（C2）持平甚至有所超越。势头正猛。&lt;/p&gt;
+</description>
+        <pubDate>Fri, 20 Jan 2017 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2017/01/20/Java-virtual-machines/</link>
+        <guid isPermaLink="true">http://localhost:4000/2017/01/20/Java-virtual-machines/</guid>
+        
+        <category>Java program</category>
+        
+        <category>Java virtual machines</category>
+        
+        
+      </item>
     
   </channel>
 </rss>

@@ -30,6 +30,9 @@
     <!-- Pygments Github CSS -->
     <link rel="stylesheet" href="/css/syntax.css">
 
+    <!-- Nav Font CSS | add by Chenyan on 14th March-->
+    <link rel="stylesheet" href="/css/xq.css">
+
     <!-- Custom Fonts -->
     <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
     <!-- Hux change font-awesome CDN to qiniu -->
@@ -51,7 +54,7 @@
     <![endif]-->
 
     <!-- ga & ba script hoook -->
-    <script></script>
+    <script src="/js/jquery.min.js "></script>
 </head>
 
 
@@ -76,15 +79,15 @@
         <div id="huxblog_navbar">
             <div class="navbar-collapse">
                 <ul class="nav navbar-nav navbar-right">
-                    <li>
+                    <li class="xq_navli animated">
                         <a href="/">Home</a>
                     </li>
                     
-                    <li>
+                    <li class="xq_navli animated">
                         <a href="/about/">About</a>
                     </li>
                     
-                    <li>
+                    <li class="xq_navli animated">
                         <a href="/tags/">Tags</a>
                     </li>
                     
@@ -146,12 +149,47 @@
         if(e.target.className == 'icon-bar') return;
         __HuxNav__.close();
     })
+
+    $(function(){
+        $('li').on('mouseover',function(){
+            $(this).addClass("runspin");
+        });
+        $('li').on('mouseout',function(){
+            $(this).removeClass("runspin");
+        });
+    });
 </script>
 
 
     <!-- Page Header -->
-<header class="intro-header" style="background-image: url('/img/about-bg.jpg')">
-    <div class="container">
+<style>
+#home_warp{
+    position: relative;
+}
+#home_warp:after{
+    width: 0;
+    height: 0;
+    content: "";
+    clear: both;
+    display: block;
+}
+#c{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: 1;
+}
+#home_bg{
+    position: relative;
+    z-index: 2;
+    width: 100%;
+}
+</style>
+<header class="intro-header" id="home_warp">
+   <!--  <iframe id="c" src="/js/bgfile/a5.html " ></iframe> -->
+    <iframe id="c"></iframe>
+
+    <div class="container" id="home_bg">
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 ">
                 <div class="site-heading">
@@ -163,7 +201,20 @@
         </div>
     </div>
 </header>
-
+<script>
+$(function(){
+    var srcPath = "/js/bgfile/a" + RandomNumBoth(1,3) + ".html ";
+    $("#c").attr("src",srcPath);
+})    
+</script>
+<script>
+function RandomNumBoth(Min,Max){
+  var Range = Max - Min;
+  var Rand = Math.random();
+  var num = Min + Math.round(Rand * Range); //四舍五入
+  return num;
+}
+</script>
 <!-- Main Content -->
 <div class="container">
 	<div class="row">
@@ -192,7 +243,7 @@
                 做做设计，看看产品<br>
     离开世界之前，一切都是过程</p></blockquote>
 
-    <p>Hey，我是<strong>陈琰</strong>，程序员 &amp; 开发工程师，2016年毕业于<a href="http://www.hgnc.net/2016/index.jsp">黄冈师范学院</a>，计算机学院 | 软件工程专业，<a href="http://www.bksx.cn">北京北控三兴信息技术有限公司</a>Java开发工程师，<a href="http://www.bksx.cn/solution/230.html">人事档案数字化</a> 加工系统 · 数字化模块 负责人。</p>
+    <p>Hey，我是<strong>陈琰</strong>，程序员 &amp; 开发工程师，2016年毕业于<a href="http://www.hgnc.net/2016/index.jsp">黄冈师范学院</a>，计算机学院 | 软件工程专业，<b>前</b><a href="http://www.bksx.cn">北京北控三兴信息技术有限公司</a>Java开发工程师，<a href="http://www.bksx.cn/solution/230.html">人事档案数字化</a> 加工系统 · 数字化模块 负责人。</p>
     
     <p>音乐重度依赖患者，代码强迫症患者，书买得比看得多患者，间歇性鸡血患者。</p>
 
@@ -270,6 +321,20 @@
                     <h5><a href="/tags/">FEATURED TAGS</a></h5>
                     <div class="tags">
                         
+                            
+                        
+                            
+                                <a href="/tags/#Java virtual machines" title="Java virtual machines" rel="3">
+                                    Java virtual machines
+                                </a>
+                            
+                        
+                            
+                        
+                            
+                        
+                            
+                        
                     </div>
                 </section>
                 
@@ -279,7 +344,7 @@
                     <hr><h5><a href="/about/">ABOUT ME</a></h5>
                     <div class="short-about">
                         
-                            <img src="/img/chenyan.jpg" />
+                            <img src="/chenyan.jpg" />
                         
                         
                             <p>写写代码，听听音乐<br>做做设计，看看产品<br>离开世界之前，一切都是过程</p>
@@ -345,6 +410,8 @@
                     
                         <li><a href="http://www.guokr.com">果壳网</a></li>
                     
+                        <li><a href="https://unsplash.com">Unsplash</a></li>
+                    
                 </ul>
                 
     		</div>
@@ -407,7 +474,7 @@
 </footer>
 
 <!-- jQuery -->
-<script src="/js/jquery.min.js "></script>
+<!-- <script src="/js/jquery.min.js "></script> -->
 
 <!-- Bootstrap Core JavaScript -->
 <script src="/js/bootstrap.min.js "></script>

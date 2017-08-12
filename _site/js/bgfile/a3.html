@@ -2,162 +2,16 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>a3</title>
-<script src="http://libs.baidu.com/jquery/1.11.3/jquery.min.js"></script>
+<title>a8</title>
 <style>
-html, body { background: #000; margin: 0; padding:0;}
-canvas { width: 100%; height: 100%; position: absolute; }
+html, body { margin: 0px; width: 100%; height: 100%; overflow: hidden; background: #000; }
+#canvas { position: absolute; width: 100%; height: 100%; }
 </style>
 </head>
-
 <body>
-<canvas></canvas>
+<canvas id="canvas"></canvas>
 <script>
-$(function(){
-  var canvas = document.querySelector('canvas'),
-      ctx = canvas.getContext('2d')
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-  ctx.lineWidth = .3;
-  ctx.strokeStyle = (new Color(150)).style;
-
-  var mousePosition = {
-    x: 30 * canvas.width / 100,
-    y: 30 * canvas.height / 100
-  };
-
-  var dots = {
-    nb: 150,
-    distance: 50,
-    d_radius: 100,
-    array: []
-  };
-
-  function colorValue(min) {
-    return Math.floor(Math.random() * 255 + min);
-  }
-  
-  function createColorStyle(r,g,b) {
-    return 'rgba(' + r + ',' + g + ',' + b + ', 0.8)';
-  }
-  
-  function mixComponents(comp1, weight1, comp2, weight2) {
-    return (comp1 * weight1 + comp2 * weight2) / (weight1 + weight2);
-  }
-  
-  function averageColorStyles(dot1, dot2) {
-    var color1 = dot1.color,
-        color2 = dot2.color;
-    
-    var r = mixComponents(color1.r, dot1.radius, color2.r, dot2.radius),
-        g = mixComponents(color1.g, dot1.radius, color2.g, dot2.radius),
-        b = mixComponents(color1.b, dot1.radius, color2.b, dot2.radius);
-    return createColorStyle(Math.floor(r), Math.floor(g), Math.floor(b));
-  }
-  
-  function Color(min) {
-    min = min || 0;
-    this.r = colorValue(min);
-    this.g = colorValue(min);
-    this.b = colorValue(min);
-    this.style = createColorStyle(this.r, this.g, this.b);
-  }
-
-  function Dot(){
-    this.x = Math.random() * canvas.width;
-    this.y = Math.random() * canvas.height;
-
-    this.vx = -.5 + Math.random();
-    this.vy = -.5 + Math.random();
-
-    this.radius = Math.random() * 2;
-
-    this.color = new Color();
-    console.log(this);
-  }
-
-  Dot.prototype = {
-    draw: function(){
-      ctx.beginPath();
-      ctx.fillStyle = this.color.style;
-      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-      ctx.fill();
-    }
-  };
-
-  function createDots(){
-    for(i = 0; i < dots.nb; i++){
-      dots.array.push(new Dot());
-    }
-  }
-
-  function moveDots() {
-    for(i = 0; i < dots.nb; i++){
-
-      var dot = dots.array[i];
-
-      if(dot.y < 0 || dot.y > canvas.height){
-        dot.vx = dot.vx;
-        dot.vy = - dot.vy;
-      }
-      else if(dot.x < 0 || dot.x > canvas.width){
-        dot.vx = - dot.vx;
-        dot.vy = dot.vy;
-      }
-      dot.x += dot.vx;
-      dot.y += dot.vy;
-    }
-  }
-
-  function connectDots() {
-    for(i = 0; i < dots.nb; i++){
-      for(j = 0; j < dots.nb; j++){
-        i_dot = dots.array[i];
-        j_dot = dots.array[j];
-
-        if((i_dot.x - j_dot.x) < dots.distance && (i_dot.y - j_dot.y) < dots.distance && (i_dot.x - j_dot.x) > - dots.distance && (i_dot.y - j_dot.y) > - dots.distance){
-          if((i_dot.x - mousePosition.x) < dots.d_radius && (i_dot.y - mousePosition.y) < dots.d_radius && (i_dot.x - mousePosition.x) > - dots.d_radius && (i_dot.y - mousePosition.y) > - dots.d_radius){
-            ctx.beginPath();
-            ctx.strokeStyle = averageColorStyles(i_dot, j_dot);
-            ctx.moveTo(i_dot.x, i_dot.y);
-            ctx.lineTo(j_dot.x, j_dot.y);
-            ctx.stroke();
-            ctx.closePath();
-          }
-        }
-      }
-    }
-  }
-
-  function drawDots() {
-    for(i = 0; i < dots.nb; i++){
-      var dot = dots.array[i];
-      dot.draw();
-    }
-  }
-
-  function animateDots() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    moveDots();
-    connectDots();
-    drawDots();
-
-    requestAnimationFrame(animateDots);	
-  }
-
-  $('canvas').on('mousemove', function(e){
-    mousePosition.x = e.pageX;
-    mousePosition.y = e.pageY;
-  });
-
-  $('canvas').on('mouseleave', function(e){
-    mousePosition.x = canvas.width / 2;
-    mousePosition.y = canvas.height / 2;
-  });
-
-  createDots();
-  requestAnimationFrame(animateDots);	
-});
+function project3D(x,y,z,vars){var p,d;x-=vars.camX;y-=vars.camY-8;z-=vars.camZ;p=Math.atan2(x,z);d=Math.sqrt(x*x+z*z);x=Math.sin(p-vars.yaw)*d;z=Math.cos(p-vars.yaw)*d;p=Math.atan2(y,z);d=Math.sqrt(y*y+z*z);y=Math.sin(p-vars.pitch)*d;z=Math.cos(p-vars.pitch)*d;var rx1=-1000;var ry1=1;var rx2=1000;var ry2=1;var rx3=0;var ry3=0;var rx4=x;var ry4=z;var uc=(ry4-ry3)*(rx2-rx1)-(rx4-rx3)*(ry2-ry1);var ua=((rx4-rx3)*(ry1-ry3)-(ry4-ry3)*(rx1-rx3))/uc;var ub=((rx2-rx1)*(ry1-ry3)-(ry2-ry1)*(rx1-rx3))/uc;if(!z)z=0.000000001;if(ua>0&&ua<1&&ub>0&&ub<1){return{x:vars.cx+(rx1+ua*(rx2-rx1))*vars.scale,y:vars.cy+y/z*vars.scale,d:(x*x+y*y+z*z)}}else{return{d:-1}}}function elevation(x,y,z){var dist=Math.sqrt(x*x+y*y+z*z);if(dist&&z/dist>=-1&&z/dist<=1)return Math.acos(z/dist);return 0.00000001}function rgb(col){col+=0.000001;var r=parseInt((0.5+Math.sin(col)*0.5)*16);var g=parseInt((0.5+Math.cos(col)*0.5)*16);var b=parseInt((0.5-Math.sin(col)*0.5)*16);return"#"+r.toString(16)+g.toString(16)+b.toString(16)}function interpolateColors(RGB1,RGB2,degree){var w2=degree;var w1=1-w2;return[w1*RGB1[0]+w2*RGB2[0],w1*RGB1[1]+w2*RGB2[1],w1*RGB1[2]+w2*RGB2[2]]}function rgbArray(col){col+=0.000001;var r=parseInt((0.5+Math.sin(col)*0.5)*256);var g=parseInt((0.5+Math.cos(col)*0.5)*256);var b=parseInt((0.5-Math.sin(col)*0.5)*256);return[r,g,b]}function colorString(arr){var r=parseInt(arr[0]);var g=parseInt(arr[1]);var b=parseInt(arr[2]);return"#"+("0"+r.toString(16)).slice(-2)+("0"+g.toString(16)).slice(-2)+("0"+b.toString(16)).slice(-2)}function process(vars){if(vars.points.length<vars.initParticles)for(var i=0;i<5;++i)spawnParticle(vars);var p,d,t;p=Math.atan2(vars.camX,vars.camZ);d=Math.sqrt(vars.camX*vars.camX+vars.camZ*vars.camZ);d-=Math.sin(vars.frameNo/80)/25;t=Math.cos(vars.frameNo/300)/165;vars.camX=Math.sin(p+t)*d;vars.camZ=Math.cos(p+t)*d;vars.camY=-Math.sin(vars.frameNo/220)*15;vars.yaw=Math.PI+p+t;vars.pitch=elevation(vars.camX,vars.camZ,vars.camY)-Math.PI/2;var t;for(var i=0;i<vars.points.length;++i){x=vars.points[i].x;y=vars.points[i].y;z=vars.points[i].z;d=Math.sqrt(x*x+z*z)/1.0075;t=.1/(1+d*d/5);p=Math.atan2(x,z)+t;vars.points[i].x=Math.sin(p)*d;vars.points[i].z=Math.cos(p)*d;vars.points[i].y+=vars.points[i].vy*t*((Math.sqrt(vars.distributionRadius)-d)*2);if(vars.points[i].y>vars.vortexHeight/2||d<.25){vars.points.splice(i,1);spawnParticle(vars)}}}function drawFloor(vars){var x,y,z,d,point,a;for(var i=-25;i<=25;i+=1){for(var j=-25;j<=25;j+=1){x=i*2;z=j*2;y=vars.floor;d=Math.sqrt(x*x+z*z);point=project3D(x,y-d*d/85,z,vars);if(point.d!=-1){size=1+15000/(1+point.d);a=0.15-Math.pow(d/50,4)*0.15;if(a>0){vars.ctx.fillStyle=colorString(interpolateColors(rgbArray(d/26-vars.frameNo/40),[0,128,32],.5+Math.sin(d/6-vars.frameNo/8)/2));vars.ctx.globalAlpha=a;vars.ctx.fillRect(point.x-size/2,point.y-size/2,size,size)}}}}vars.ctx.fillStyle="#82f";for(var i=-25;i<=25;i+=1){for(var j=-25;j<=25;j+=1){x=i*2;z=j*2;y=-vars.floor;d=Math.sqrt(x*x+z*z);point=project3D(x,y+d*d/85,z,vars);if(point.d!=-1){size=1+15000/(1+point.d);a=0.15-Math.pow(d/50,4)*0.15;if(a>0){vars.ctx.fillStyle=colorString(interpolateColors(rgbArray(-d/26-vars.frameNo/40),[32,0,128],.5+Math.sin(-d/6-vars.frameNo/8)/2));vars.ctx.globalAlpha=a;vars.ctx.fillRect(point.x-size/2,point.y-size/2,size,size)}}}}}function sortFunction(a,b){return b.dist-a.dist}function draw(vars){vars.ctx.globalAlpha=.15;vars.ctx.fillStyle="#000";vars.ctx.fillRect(0,0,canvas.width,canvas.height);drawFloor(vars);var point,x,y,z,a;for(var i=0;i<vars.points.length;++i){x=vars.points[i].x;y=vars.points[i].y;z=vars.points[i].z;point=project3D(x,y,z,vars);if(point.d!=-1){vars.points[i].dist=point.d;size=1+vars.points[i].radius/(1+point.d);d=Math.abs(vars.points[i].y);a=.8-Math.pow(d/(vars.vortexHeight/2),1000)*.8;vars.ctx.globalAlpha=a>=0&&a<=1?a:0;vars.ctx.fillStyle=rgb(vars.points[i].color);if(point.x>-1&&point.x<vars.canvas.width&&point.y>-1&&point.y<vars.canvas.height)vars.ctx.fillRect(point.x-size/2,point.y-size/2,size,size)}}vars.points.sort(sortFunction)}function spawnParticle(vars){var p,ls;pt={};p=Math.PI*2*Math.random();ls=Math.sqrt(Math.random()*vars.distributionRadius);pt.x=Math.sin(p)*ls;pt.y=-vars.vortexHeight/2;pt.vy=vars.initV/20+Math.random()*vars.initV;pt.z=Math.cos(p)*ls;pt.radius=200+800*Math.random();pt.color=pt.radius/1000+vars.frameNo/250;vars.points.push(pt)}function frame(vars){if(vars===undefined){var vars={};vars.canvas=document.querySelector("canvas");vars.ctx=vars.canvas.getContext("2d");vars.canvas.width=document.body.clientWidth;vars.canvas.height=document.body.clientHeight;window.addEventListener("resize",function(){vars.canvas.width=document.body.clientWidth;vars.canvas.height=document.body.clientHeight;vars.cx=vars.canvas.width/2;vars.cy=vars.canvas.height/2},true);vars.frameNo=0;vars.camX=0;vars.camY=0;vars.camZ=-14;vars.pitch=elevation(vars.camX,vars.camZ,vars.camY)-Math.PI/2;vars.yaw=0;vars.cx=vars.canvas.width/2;vars.cy=vars.canvas.height/2;vars.bounding=10;vars.scale=500;vars.floor=26.5;vars.points=[];vars.initParticles=1000;vars.initV=.01;vars.distributionRadius=800;vars.vortexHeight=25}vars.frameNo++;requestAnimationFrame(function(){frame(vars)});process(vars);draw(vars)}frame();
 </script>
 </body>
 </html>
