@@ -2,7 +2,7 @@
 layout:     post
 title:      "Linux一键安装Mysql"
 subtitle:   "编写Shell实现Mysql的自动安装"
-date:       2017-06-11
+date:       2018-03-07
 author:     "Chenyan"
 header-img: "img/post-bg-os-metro.jpg"
 catalog:    false
