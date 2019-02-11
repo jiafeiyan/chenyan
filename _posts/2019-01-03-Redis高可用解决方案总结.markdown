@@ -1,7 +1,7 @@
 ---
 layout:     post
 title:      "Redis高可用解决方案总结"
-subtitle:   "各种方案的优缺点分析"
+subtitle:   "各种方案的优缺点分析"
 date:       2019-01-03
 author:     "Chenyan"
 header-img: "img/post-bg-wmic.jpg"
@@ -16,7 +16,7 @@ Redis 的几种常见使用方式包括：
 2. Redis 多副本（主从）；
 3. Redis Sentinel（哨兵）；
 4. Redis Cluster；
-5. Redis 自研。
+5. Redis 自研；
 
 ## 各种使用方式的优缺点
 
