@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      "Redis 高可用解决方案总结"
+title:      "Redis高可用解决方案总结"
 subtitle:   "各种方案的优缺点分析"
 date:       2019-01-03
 author:     "Chenyan"
@@ -10,8 +10,6 @@ tags:
     - Redis
     - Linux
 ---
-
-## Shell脚本常见使用方式
 
 Redis 的几种常见使用方式包括：
 1. Redis 单副本；
