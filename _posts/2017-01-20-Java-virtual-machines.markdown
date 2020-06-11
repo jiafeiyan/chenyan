@@ -16,7 +16,7 @@ tags:
 
 光谈部署量的话，搞不好现在部署量最多的JVM是Dalvik / ART…虽然Google会告诉大家Dalvik和ART不是“JVM”，但大家都知道骨子里它就是不折不扣的JVM，毫无疑问。它们的设计处处有标注对JVM规范的参考，以保证语义符合JVM规范的要求；那个基于寄存器的字节码设计只是一种实现优化而已。
 
-![image description](http://www.chenyan.pro/img/2017-01/JVMversion.png)
+![image description](https://jiafeiyan.github.io/chenyan/img/2017-01/JVMversion.png)
 
 ##### Java SE / Java EE
 
@@ -56,7 +56,7 @@ J9 VM的性能水平大致跟HotSpot VM是一个档次的。有时HotSpot快些�
 
 ###### Zing VM
 
-![image description](http://www.chenyan.pro/img/2017-01/ZingJVM.png)
+![image description](https://jiafeiyan.github.io/chenyan/img/2017-01/ZingJVM.png)
 
 Zing VM是一个从Sun HoSpot VM fork出来的一个高性能JVM，可以运行在Linux/x86-64平台上。Azul为它重新写了一套GC，也修改了VM内的许多实现细节，所以从我们自己的角度看，与其说它是HotSpot VM的一个变种，还不如把它看作“一个全新的JVM、只是凑巧与HotSpot VM很像”更合适。
 

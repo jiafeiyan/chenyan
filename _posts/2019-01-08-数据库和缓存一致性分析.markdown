@@ -13,7 +13,7 @@ tags:
 
 首先，缓存由于其高并发和高性能的特性，已经在项目中被广泛使用。在读取缓存方面，大家没啥疑问，都是按照下图的流程来进行业务操作。
 
-![image description](http://www.chenyan.pro/img/2019-01/cache_1.jpg)
+![image description](https://jiafeiyan.github.io/chenyan/img/2019-01/cache_1.jpg)
 
 但是在更新缓存方面，对于更新完数据库，是更新缓存呢，还是删除缓存。又或者是先删除缓存，再更新数据库，其实大家存在很大的争议。
 
@@ -149,7 +149,7 @@ public void write(String key, Object data){
 
 **方案一：**
 
-![image description](http://www.chenyan.pro/img/2019-01/cache_2.jpg)
+![image description](https://jiafeiyan.github.io/chenyan/img/2019-01/cache_2.jpg)
 
 流程如下所示
 1. 更新数据库数据；
@@ -162,7 +162,7 @@ public void write(String key, Object data){
 
 **方案二：**
 
-![image description](http://www.chenyan.pro/img/2019-01/cache_3.jpg)
+![image description](https://jiafeiyan.github.io/chenyan/img/2019-01/cache_3.jpg)
 
 流程如下图所示：
 1. 更新数据库数据

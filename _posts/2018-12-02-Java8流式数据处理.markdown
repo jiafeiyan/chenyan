@@ -32,7 +32,7 @@ List<Integer> evens = nums.stream().filter(num -> num % 2 == 0).collect(Collecto
 
 &emsp;&emsp;由上面的例子可以看出，java8的流式处理极大的简化了对于集合的操作，实际上不光是集合，包括数组、文件等，只要是可以转换成流，我们都可以借助流式处理，类似于我们写SQL语句一样对其进行操作。java8通过内部迭代来实现对流的处理，一个流式处理可以分为三个部分：转换成流、中间操作、终端操作。如下图：
 
-![image description](http://www.chenyan.pro/img/2018-12/stream.png)
+![image description](https://jiafeiyan.github.io/chenyan/img/2018-12/stream.png)
 
 以集合为例，一个流式处理的操作我们首先需要调用stream()函数将其转换成流，然后再调用相应的中间操作达到我们需要对集合进行的操作，比如筛选、转换等，最后通过终端操作对前面的结果进行封装，返回我们需要的形式。
 

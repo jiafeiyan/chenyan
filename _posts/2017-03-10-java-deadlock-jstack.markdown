@@ -69,7 +69,7 @@ class T2 implements Runnable {
 ```
 #### Jstack分析
 1. 查询进程PID
-![image description](http://www.chenyan.pro/img/2017-03/deadlock_1.png)
+![image description](https://jiafeiyan.github.io/chenyan/img/2017-03/deadlock_1.png)
 2. 调用自带的Jstack工具分析<br />
     可以发现Thread-1和Thread-0两个线程已经互相锁住
-![image description](http://www.chenyan.pro/img/2017-03/deadlock_2.png)
+![image description](https://jiafeiyan.github.io/chenyan/img/2017-03/deadlock_2.png)

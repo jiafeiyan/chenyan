@@ -17,7 +17,7 @@ tags:
 
 比如说一个核心链路里面：**系统A -> 系统B -> 系统C，然后系统C是通过MQ异步调用系统D的。**
 
-![image description](http://www.chenyan.pro/img/2019-01/mq_11.jpg)
+![image description](https://jiafeiyan.github.io/chenyan/img/2019-01/mq_11.jpg)
 
 看起来很好，你用这个MQ异步化的手段解决了一个核心链路执行性能过差的问题。
 
@@ -33,7 +33,7 @@ tags:
 
 还是上面那张图，大家再来看一下：
 
-![image description](http://www.chenyan.pro/img/2019-01/mq_11.jpg)
+![image description](https://jiafeiyan.github.io/chenyan/img/2019-01/mq_11.jpg)
 
 不知道大家有没有发现一个问题，这个链路除了MQ中间件挂掉这个可能存在的隐患之外，可能还有一些其他的技术问题。
 
